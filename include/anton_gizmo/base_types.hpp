@@ -12,6 +12,7 @@ namespace anton {
         Vector3 direction;
     };
 
+    // Unprojects a point in screen coordinates to world coordinates. Assumes OpenGL NDC.
     Ray screen_to_ray(Matrix4 inv_view, Matrix4 inv_projection, int32_t screen_width, int32_t screen_height, Vector2 point);
 } // namespace anton
 
