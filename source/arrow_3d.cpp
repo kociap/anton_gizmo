@@ -2,6 +2,8 @@
 
 #include <anton_gizmo/utils.hpp>
 #include <anton_math/quaternion.hpp>
+#include <anton_math/vector2.hpp>
+#include <anton_math/vector3.hpp>
 #include <intersection_tests.hpp>
 
 namespace anton {
@@ -59,22 +61,22 @@ namespace anton {
         }
     }
 
-    uint32_t generate_arrow_3d_geometry(Arrow_3D_Style const style, uint32_t const vertex_count, Vector3* const vertices) {
+    uint32_t generate_arrow_3d_geometry(Arrow_3D_Style const style, uint32_t const vertex_count, float* const vertices) {
         switch (style) {
             case Arrow_3D_Style::cone: {
-                generate_cone_geometry(vertex_count, vertices);
+                generate_cone_geometry(vertex_count, reinterpret_cast<Vector3*>(vertices));
             } break;
 
             case Arrow_3D_Style::cube: {
-                generate_cube_geometry(vertices);
+                generate_cube_geometry(reinterpret_cast<Vector3*>(vertices));
             } break;
         }
         return get_required_buffer_size_arrow_3d(style, vertex_count);
     }
 
     std::optional<float> intersect_arrow_3d(Ray const ray, Arrow_3D const arrow, Matrix4 const world_transform, Matrix4 const view_projection_matrix,
-                                            Vector2 const viewport_size) {
-        float const scale = compute_scale(world_transform, arrow.size, view_projection_matrix, viewport_size);
+                                            uint32_t const viewport_width, uint32_t const viewport_height) {
+        float const scale = compute_scale(world_transform, arrow.size, view_projection_matrix, viewport_width, viewport_height);
         switch (arrow.draw_style) {
             case Arrow_3D_Style::cone: {
                 std::optional<float> result = std::nullopt;

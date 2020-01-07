@@ -2,7 +2,6 @@
 #define ANTON_GIZMO_BASE_TYPES_HPP_INCLUDE
 
 #include <anton_math/matrix4.hpp>
-#include <anton_math/vector2.hpp>
 #include <anton_math/vector3.hpp>
 #include <stdint.h>
 
@@ -13,7 +12,8 @@ namespace anton {
     };
 
     // Unprojects a point in screen coordinates to world coordinates. Assumes OpenGL NDC.
-    Ray screen_to_ray(Matrix4 inv_view, Matrix4 inv_projection, int32_t screen_width, int32_t screen_height, Vector2 point);
+    // point is a 2D point (2 component vector)
+    Ray screen_to_ray(Matrix4 inv_view, Matrix4 inv_projection, int32_t screen_width, int32_t screen_height, float* point);
 } // namespace anton
 
 #endif // !ANTON_GIZMO_BASE_TYPES_HPP_INCLUDE

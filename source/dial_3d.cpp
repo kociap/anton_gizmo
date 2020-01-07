@@ -1,6 +1,8 @@
 #include <anton_gizmo/dial_3d.hpp>
 
 #include <anton_gizmo/utils.hpp>
+#include <anton_math/vector2.hpp>
+#include <anton_math/vector3.hpp>
 #include <intersection_tests.hpp>
 
 namespace anton {
@@ -8,7 +10,9 @@ namespace anton {
         return 2 * vertex_count + 2;
     }
 
-    uint32_t generate_dial_3d_geometry(uint32_t const vertex_count, Vector3* const vertices, Vector3* const rotation_axes, float* const scale_factors) {
+    uint32_t generate_dial_3d_geometry(uint32_t const vertex_count, float* const vertices_ptr, Vector3* const rotation_axes_ptr, float* const scale_factors) {
+        Vector3* const vertices = reinterpret_cast<Vector3*>(vertices_ptr);
+        Vector3* const rotation_axes = reinterpret_cast<Vector3*>(rotation_axes_ptr);
         float const angle = constants::pi / vertex_count;
         for (int32_t i = 0; i <= 2 * vertex_count; i += 2) {
             Vector3 const pos = {cos(angle * i), sin(angle * i), 0};
@@ -47,7 +51,8 @@ namespace anton {
         return 2 * vertex_count + 2;
     }
 
-    std::optional<float> intersect_dial_3d(Ray, Dial_3D, Matrix4 world_transform, Matrix4 view_projection_matrix, Vector2 viewport_size) {
+    std::optional<float> intersect_dial_3d(Ray, Dial_3D, Matrix4 world_transform, Matrix4 view_projection_matrix, uint32_t const viewport_width,
+                                           uint32_t viewport_height) {
         return std::nullopt;
     }
 } // namespace anton

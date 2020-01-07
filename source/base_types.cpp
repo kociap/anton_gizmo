@@ -6,7 +6,8 @@
 #include <anton_math/vector4.hpp>
 
 namespace anton {
-    Ray screen_to_ray(Matrix4 inv_view, Matrix4 inv_projection, int32_t screen_width, int32_t screen_height, Vector2 point) {
+    Ray screen_to_ray(Matrix4 inv_view, Matrix4 inv_projection, int32_t screen_width, int32_t screen_height, float* const point_ptr) {
+        Vector2 const point = Vector2(point_ptr[0], point_ptr[1]);
         // Transform screen point to normalized -1..1 coordinates
         float const normalized_x = 2.0f * point.x / static_cast<float>(screen_width) - 1.0f;
         float const normalized_y = 2.0f * point.y / static_cast<float>(screen_height) - 1.0f;

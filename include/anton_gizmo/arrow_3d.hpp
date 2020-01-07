@@ -3,8 +3,6 @@
 
 #include <anton_gizmo/base_types.hpp>
 #include <anton_math/matrix4.hpp>
-#include <anton_math/vector2.hpp>
-#include <anton_math/vector3.hpp>
 #include <optional>
 
 namespace anton {
@@ -21,6 +19,7 @@ namespace anton {
     };
 
     // Returns how many elements a buffer should have at least to fit a gizmo with given number of vertices.
+    // TODO: Explain what is the vertex_count
     uint32_t get_required_buffer_size_arrow_3d(Arrow_3D_Style const style, uint32_t const vertex_count);
 
     // Writes vertex positions to the vertices buffer
@@ -32,10 +31,11 @@ namespace anton {
     // For cube it writes a triangle stripe of 14 vertices in CCW order for the cube
     //
     // Returns the number of vertices written.
-    uint32_t generate_arrow_3d_geometry(Arrow_3D_Style const style, uint32_t const vertex_count, Vector3* vertices);
+    uint32_t generate_arrow_3d_geometry(Arrow_3D_Style const style, uint32_t const vertex_count, float* vertices);
 
     // Tests the arrow for intersection and returns the distance to the intersection point along the ray if the ray intersects the bounding volumes.
-    std::optional<float> intersect_arrow_3d(Ray, Arrow_3D, Matrix4 world_transform, Matrix4 view_projection_matrix, Vector2 viewport_size);
+    std::optional<float> intersect_arrow_3d(Ray, Arrow_3D, Matrix4 world_transform, Matrix4 view_projection_matrix, uint32_t viewport_width,
+                                            uint32_t viewport_height);
 } // namespace anton
 
 #endif // !ANTON_GIZMO_ARROW_3D_HPP_INCLUDE
