@@ -29,7 +29,6 @@ set(ANTON_PRIVATE_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/source/base_types.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/source/dial_3d.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/source/intersection_tests.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/source/intersections_common.hpp"
 )
 
 target_sources(anton_gizmo
