@@ -22,6 +22,7 @@ namespace anton {
         float z = 0;
 
         Vector3() = default;
+        explicit Vector3(float const* ptr): x(ptr[0]), y(ptr[1]), z(ptr[2]) {}
         Vector3(float x, float y, float z): x(x), y(y), z(z) {}
         explicit Vector3(Vector2 const&, float z = 0);
         explicit Vector3(Vector4 const&);

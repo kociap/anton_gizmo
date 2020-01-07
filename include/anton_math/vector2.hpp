@@ -19,8 +19,9 @@ namespace anton {
         float x = 0;
         float y = 0;
 
-        constexpr Vector2() = default;
-        constexpr Vector2(float x, float y): x(x), y(y) {}
+        Vector2() = default;
+        explicit Vector2(float const* ptr): x(ptr[0]), y(ptr[1]) {}
+        Vector2(float x, float y): x(x), y(y) {}
         explicit Vector2(Vector3 const&);
         explicit Vector2(Vector4 const&);
 

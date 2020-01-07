@@ -12,8 +12,8 @@ namespace anton {
         static Matrix2 const identity;
 
         Matrix2();
+        explicit Matrix2(float const* ptr): rows{Vector2(ptr), Vector2(ptr + 2)} {}
         Matrix2(Vector2, Vector2);
-        Matrix2(float m00, float m01, float m10, float m11);
 
         Vector2& operator[](int row);
         Vector2 operator[](int row) const;
@@ -28,7 +28,6 @@ namespace anton {
 
         Matrix2& transpose();
 
-    private:
         Vector2 rows[2];
     };
 

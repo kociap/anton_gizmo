@@ -28,7 +28,6 @@ namespace anton {
 
         Matrix4& transpose();
 
-    private:
         Vector4 rows[4];
     };
 
