@@ -17,6 +17,7 @@ namespace anton {
         float w = 0;
 
         Vector4() = default;
+        explicit Vector4(float const* ptr): x(ptr[0]), y(ptr[1]), z(ptr[2]), w(ptr[3]) {}
         Vector4(float x, float y, float z, float w): x(x), y(y), z(z), w(w) {}
         explicit Vector4(Vector2 const&, float z = 0, float w = 0);
         explicit Vector4(Vector3 const&, float w = 0);

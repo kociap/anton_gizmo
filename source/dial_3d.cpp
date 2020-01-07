@@ -1,6 +1,7 @@
 #include <anton_gizmo/dial_3d.hpp>
 
 #include <anton_gizmo/utils.hpp>
+#include <anton_math/matrix4.hpp>
 #include <anton_math/vector2.hpp>
 #include <anton_math/vector3.hpp>
 #include <intersection_tests.hpp>
@@ -51,8 +52,8 @@ namespace anton {
         return 2 * vertex_count + 2;
     }
 
-    std::optional<float> intersect_dial_3d(Ray, Dial_3D, Matrix4 world_transform, Matrix4 view_projection_matrix, uint32_t const viewport_width,
-                                           uint32_t viewport_height) {
+    std::optional<float> intersect_dial_3d(Ray, Dial_3D, float const* const world_transform, float const* const view_projection_matrix,
+                                           uint32_t const viewport_width, uint32_t viewport_height) {
         return std::nullopt;
     }
 } // namespace anton

@@ -23,7 +23,8 @@ namespace anton {
     uint32_t generate_dial_3d_geometry(uint32_t vertex_count, float* vertices, float* rotation_axes, float* scale_factors);
 
     // Tests the arrow for intersection and returns the distance to the intersection point along the ray if the ray intersects the bounding volumes.
-    std::optional<float> intersect_dial_3d(Ray, Dial_3D, Matrix4 world_transform, Matrix4 view_projection_matrix, uint32_t viewport_width,
+    // world_transform and view_projection_matrix are 4x4 matrices in row-major layout
+    std::optional<float> intersect_dial_3d(Ray, Dial_3D, float const* world_transform, float const* view_projection_matrix, uint32_t viewport_width,
                                            uint32_t viewport_height);
 } // namespace anton
 

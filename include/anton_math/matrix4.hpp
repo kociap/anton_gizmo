@@ -12,6 +12,7 @@ namespace anton {
         static Matrix4 const identity;
 
         Matrix4();
+        explicit Matrix4(float const* const ptr): rows{Vector4(ptr), Vector4(ptr + 4), Vector4(ptr + 8), Vector4(ptr + 12)} {}
         Matrix4(Vector4, Vector4, Vector4, Vector4);
 
         Vector4& operator[](int row);

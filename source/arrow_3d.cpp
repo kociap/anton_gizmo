@@ -1,6 +1,7 @@
 #include <anton_gizmo/arrow_3d.hpp>
 
 #include <anton_gizmo/utils.hpp>
+#include <anton_math/matrix4.hpp>
 #include <anton_math/quaternion.hpp>
 #include <anton_math/vector2.hpp>
 #include <anton_math/vector3.hpp>
@@ -74,9 +75,10 @@ namespace anton {
         return get_required_buffer_size_arrow_3d(style, vertex_count);
     }
 
-    std::optional<float> intersect_arrow_3d(Ray const ray, Arrow_3D const arrow, Matrix4 const world_transform, Matrix4 const view_projection_matrix,
-                                            uint32_t const viewport_width, uint32_t const viewport_height) {
-        float const scale = compute_scale(world_transform, arrow.size, view_projection_matrix, viewport_width, viewport_height);
+    std::optional<float> intersect_arrow_3d(Ray const ray, Arrow_3D const arrow, float const* const world_transform_ptr,
+                                            float const* const view_projection_matrix_ptr, uint32_t const viewport_width, uint32_t const viewport_height) {
+        Matrix4 const world_transform = Matrix4(world_transform_ptr);
+        float const scale = compute_scale(world_transform_ptr, arrow.size, view_projection_matrix_ptr, viewport_width, viewport_height);
         switch (arrow.draw_style) {
             case Arrow_3D_Style::cone: {
                 std::optional<float> result = std::nullopt;
