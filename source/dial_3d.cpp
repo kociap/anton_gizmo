@@ -15,13 +15,13 @@ namespace anton {
         Vector3* const vertices = reinterpret_cast<Vector3*>(vertices_ptr);
         Vector3* const rotation_axes = reinterpret_cast<Vector3*>(rotation_axes_ptr);
         float const angle = constants::pi / vertex_count;
-        for (int32_t i = 0; i <= 2 * vertex_count; i += 2) {
+        for (uint64_t i = 0; i <= 2 * uint64_t(vertex_count); i += 2) {
             Vector3 const pos = {cos(angle * i), sin(angle * i), 0};
             vertices[i] = pos;
             vertices[i + 1] = pos;
         }
 
-        for (int32_t i = 2; i <= 2 * vertex_count - 2; i += 2) {
+        for (uint64_t i = 2; i <= 2 * uint64_t(vertex_count) - 2; i += 2) {
             // normal = (vert[i] - vert[i - 2]) + (vert[i + 2] - vert[i])
             Vector3 const normal = normalize(vertices[i + 2] - vertices[i - 2]);
             rotation_axes[i] = normal;
@@ -52,8 +52,7 @@ namespace anton {
         return 2 * vertex_count + 2;
     }
 
-    std::optional<float> intersect_dial_3d(Ray, Dial_3D, float const* const world_transform, float const* const view_projection_matrix,
-                                           uint32_t const viewport_width, uint32_t viewport_height) {
+    std::optional<float> intersect_dial_3d(Ray, Dial_3D, float const* const, float const* const, uint32_t const, uint32_t const) {
         return std::nullopt;
     }
 } // namespace anton

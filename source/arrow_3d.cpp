@@ -22,9 +22,9 @@ namespace anton {
         Vector3* const cone = vertices + 2;
         base[0] = {0, 0, -0.8f};
         cone[0] = {0, 0, -1.0f};
-        for (int32_t i = 0; i <= vert_count; ++i) {
+        for (uint64_t i = 0; i <= uint64_t(vert_count); ++i) {
             rotated_vec = rotation_quat * rotated_vec * conjugate(rotation_quat);
-            base[1 + vert_count - i] = Vector3{rotated_vec.x, rotated_vec.y, -0.8f};
+            base[1 + uint64_t(vert_count) - i] = Vector3{rotated_vec.x, rotated_vec.y, -0.8f};
             cone[1 + i] = Vector3{rotated_vec.x, rotated_vec.y, -0.8f};
         }
     }
