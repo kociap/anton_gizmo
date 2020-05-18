@@ -1,33 +1,33 @@
 #ifndef ANTON_INTERSECTION_TESTS_HPP_INCLUDE
 #define ANTON_INTERSECTION_TESTS_HPP_INCLUDE
 
-#include <anton_gizmo/base_types.hpp>
-#include <anton_math/transform.hpp>
-#include <anton_math/vector3.hpp>
-#include <anton_math/vector4.hpp>
+#include <anton/gizmo/common.hpp>
+#include <anton/math/transform.hpp>
+#include <anton/math/vector3.hpp>
+#include <anton/math/vector4.hpp>
 #include <optional>
 
-namespace anton {
+namespace anton::gizmo {
     class Raycast_Hit {
     public:
-        Vector3 hit_point;
-        Vector3 barycentric_coordinates;
-        float distance = 0;
+        math::Vector3 hit_point;
+        math::Vector3 barycentric_coordinates;
+        f32 distance = 0;
     };
 
     class OBB {
     public:
-        Vector3 center;
-        Vector3 local_x;
-        Vector3 local_y;
-        Vector3 local_z;
-        Vector3 halfwidths;
+        math::Vector3 center;
+        math::Vector3 local_x;
+        math::Vector3 local_y;
+        math::Vector3 local_z;
+        math::Vector3 halfwidths;
     };
 
-    inline std::optional<Raycast_Hit> intersect_ray_plane(Ray const ray, Vector3 const plane_normal, float const plane_distance) {
-        float const angle_cos = dot(ray.direction, plane_normal);
-        float const coeff = (plane_distance - dot(ray.origin, plane_normal)) / angle_cos;
-        if (abs(angle_cos) > constants::epsilon && coeff >= 0.0f) {
+    inline std::optional<Raycast_Hit> intersect_ray_plane(Ray const ray, math::Vector3 const plane_normal, f32 const plane_distance) {
+        f32 const angle_cos = dot(ray.direction, plane_normal);
+        f32 const coeff = (plane_distance - dot(ray.origin, plane_normal)) / angle_cos;
+        if (math::abs(angle_cos) > math::epsilon && coeff >= 0.0f) {
             Raycast_Hit out;
             out.distance = coeff;
             out.hit_point = ray.origin + ray.direction * coeff;
@@ -37,34 +37,34 @@ namespace anton {
         }
     }
 
-    inline std::optional<Raycast_Hit> intersect_ray_cone(Ray const ray, Vector3 const vertex, Vector3 const direction, float const angle_cos,
-                                                         float const height) {
+    inline std::optional<Raycast_Hit> intersect_ray_cone(Ray const ray, math::Vector3 const vertex, math::Vector3 const direction, f32 const angle_cos,
+                                                         f32 const height) {
         std::optional<Raycast_Hit> result = std::nullopt;
 
-        Vector3 const ray_origin = ray.origin - vertex;
-        float const angle_cos_square = angle_cos * angle_cos;
-        Vector3 const ray_dir_prim = dot(ray.direction, direction) * direction;
-        float const a = angle_cos_square * length_squared(ray.direction - ray_dir_prim) - length_squared(ray_dir_prim);
-        float const ray_origin_prim_len = dot(ray_origin, direction);
-        Vector3 const ray_origin_prim = ray_origin_prim_len * direction;
-        float const b = 2.0f * angle_cos_square * dot(ray_origin - ray_origin_prim, ray.direction - ray_dir_prim) - 2.0f * dot(ray_origin_prim, ray_dir_prim);
-        float const c = angle_cos_square * length_squared(ray_origin - ray_origin_prim) - length_squared(ray_origin_prim);
-        if (a > constants::epsilon || a < -constants::epsilon) {
-            float const delta = b * b - 4.0f * a * c;
+        math::Vector3 const ray_origin = ray.origin - vertex;
+        f32 const angle_cos_square = angle_cos * angle_cos;
+        math::Vector3 const ray_dir_prim = dot(ray.direction, direction) * direction;
+        f32 const a = angle_cos_square * length_squared(ray.direction - ray_dir_prim) - length_squared(ray_dir_prim);
+        f32 const ray_origin_prim_len = dot(ray_origin, direction);
+        math::Vector3 const ray_origin_prim = ray_origin_prim_len * direction;
+        f32 const b = 2.0f * angle_cos_square * dot(ray_origin - ray_origin_prim, ray.direction - ray_dir_prim) - 2.0f * dot(ray_origin_prim, ray_dir_prim);
+        f32 const c = angle_cos_square * length_squared(ray_origin - ray_origin_prim) - length_squared(ray_origin_prim);
+        if (a > math::epsilon || a < -math::epsilon) {
+            f32 const delta = b * b - 4.0f * a * c;
             if (delta >= 0.0f) {
-                float const delta_sqrt = sqrt(delta);
-                float const t1 = 0.5f * (-b - delta_sqrt) / a;
-                Vector3 const t1v = ray_origin + ray.direction * t1;
-                if (float const point_height = dot(direction, t1v); t1 >= 0.0f && point_height >= 0 && point_height <= height) {
+                f32 const delta_sqrt = sqrt(delta);
+                f32 const t1 = 0.5f * (-b - delta_sqrt) / a;
+                math::Vector3 const t1v = ray_origin + ray.direction * t1;
+                if (f32 const point_height = dot(direction, t1v); t1 >= 0.0f && point_height >= 0 && point_height <= height) {
                     Raycast_Hit hit;
                     hit.distance = t1;
                     hit.hit_point = t1v + vertex;
                     result = hit;
                 }
 
-                float const t2 = 0.5f * (-b + delta_sqrt) / a;
-                Vector3 const t2v = ray_origin + ray.direction * t2;
-                if (float const point_height = dot(direction, t2v);
+                f32 const t2 = 0.5f * (-b + delta_sqrt) / a;
+                math::Vector3 const t2v = ray_origin + ray.direction * t2;
+                if (f32 const point_height = dot(direction, t2v);
                     t2 >= 0.0f && point_height >= 0 && point_height <= height && (!result || t2 < result->distance)) {
                     Raycast_Hit hit;
                     hit.distance = t2;
@@ -74,9 +74,9 @@ namespace anton {
             }
         } else {
             // Ray is parallel to the cone boundary
-            if (b > constants::epsilon || b < constants::epsilon) {
-                float const t = -c / b;
-                float const point_height = dot(ray_origin + ray.direction * t, direction);
+            if (b > math::epsilon || b < math::epsilon) {
+                f32 const t = -c / b;
+                f32 const point_height = dot(ray_origin + ray.direction * t, direction);
                 if (t >= 0 && point_height <= height && point_height >= 0.0f) {
                     Raycast_Hit hit;
                     hit.distance = t;
@@ -91,7 +91,7 @@ namespace anton {
                     hit.distance = 0.0f;
                     hit.hit_point = ray.origin;
                     result = hit;
-                } else if (float const t = -dot(ray_origin, ray.direction); t >= 0.0f) {
+                } else if (f32 const t = -dot(ray_origin, ray.direction); t >= 0.0f) {
                     Raycast_Hit hit;
                     hit.distance = t;
                     hit.hit_point = ray.origin + ray.direction * t;
@@ -110,19 +110,20 @@ namespace anton {
     }
 
     inline std::optional<Raycast_Hit> intersect_ray_obb(Ray ray, OBB obb) {
-        Matrix4 rotation = Matrix4(Vector4{obb.local_x, 0}, Vector4{obb.local_y, 0}, Vector4{obb.local_z, 0}, Vector4{0, 0, 0, 1});
+        math::Matrix4 rotation =
+            math::Matrix4(math::Vector4{obb.local_x, 0}, math::Vector4{obb.local_y, 0}, math::Vector4{obb.local_z, 0}, math::Vector4{0, 0, 0, 1});
         // Center OBB at 0
-        Matrix4 obb_space = transform::translate(-obb.center) * rotation;
-        Vector4 ray_dir = Vector4(ray.direction, 0) * rotation;
-        Vector4 ray_origin = Vector4(ray.origin, 1) * obb_space;
+        math::Matrix4 obb_space = rotation * math::translate(-obb.center);
+        math::Vector4 ray_dir = rotation * math::Vector4(ray.direction, 0);
+        math::Vector4 ray_origin = obb_space * math::Vector4(ray.origin, 1);
         // AABB slab test
-        float tmin = -constants::infinity;
-        float tmax = constants::infinity;
+        f32 tmin = -math::infinity;
+        f32 tmax = math::infinity;
         for (int i = 0; i < 3; ++i) {
-            float tx1 = (obb.halfwidths[i] - ray_origin[i]) / ray_dir[i];
-            float tx2 = (-obb.halfwidths[i] - ray_origin[i]) / ray_dir[i];
-            tmax = min(tmax, max(tx1, tx2));
-            tmin = max(tmin, min(tx1, tx2));
+            f32 tx1 = (obb.halfwidths[i] - ray_origin[i]) / ray_dir[i];
+            f32 tx2 = (-obb.halfwidths[i] - ray_origin[i]) / ray_dir[i];
+            tmax = math::min(tmax, math::max(tx1, tx2));
+            tmin = math::max(tmin, math::min(tx1, tx2));
         }
 
         if (tmax >= 0 && tmax >= tmin) {
@@ -135,25 +136,25 @@ namespace anton {
         }
     }
 
-    inline std::optional<Raycast_Hit> intersect_ray_cylinder(Ray const ray, Vector3 const vertex1, Vector3 const vertex2, float const radius) {
+    inline std::optional<Raycast_Hit> intersect_ray_cylinder(Ray const ray, math::Vector3 const vertex1, math::Vector3 const vertex2, f32 const radius) {
         std::optional<Raycast_Hit> result = std::nullopt;
 
-        float const radius_squared = radius * radius;
-        Vector3 const ray_origin = ray.origin - vertex1;
-        Vector3 const vert2 = vertex2 - vertex1;
-        Vector3 const cylinder_normal = normalize(vert2);
-        float const ray_dir_prim_len = dot(ray.direction, cylinder_normal);
-        float const a = length_squared(ray.direction) - ray_dir_prim_len * ray_dir_prim_len;
-        float const ray_origin_prim_len = dot(ray_origin, cylinder_normal);
-        float const b = 2.0f * dot(ray_origin, ray.direction) - 2.0f * ray_origin_prim_len * ray_dir_prim_len;
-        float const c = length_squared(ray_origin) - ray_origin_prim_len * ray_origin_prim_len - radius_squared;
-        float const cap2_plane_dist = dot(vert2, -cylinder_normal);
-        if (a > constants::epsilon || a < -constants::epsilon) {
-            float const delta = b * b - 4 * a * c;
+        f32 const radius_squared = radius * radius;
+        math::Vector3 const ray_origin = ray.origin - vertex1;
+        math::Vector3 const vert2 = vertex2 - vertex1;
+        math::Vector3 const cylinder_normal = normalize(vert2);
+        f32 const ray_dir_prim_len = dot(ray.direction, cylinder_normal);
+        f32 const a = length_squared(ray.direction) - ray_dir_prim_len * ray_dir_prim_len;
+        f32 const ray_origin_prim_len = dot(ray_origin, cylinder_normal);
+        f32 const b = 2.0f * dot(ray_origin, ray.direction) - 2.0f * ray_origin_prim_len * ray_dir_prim_len;
+        f32 const c = length_squared(ray_origin) - ray_origin_prim_len * ray_origin_prim_len - radius_squared;
+        f32 const cap2_plane_dist = dot(vert2, -cylinder_normal);
+        if (a > math::epsilon || a < -math::epsilon) {
+            f32 const delta = b * b - 4 * a * c;
             if (delta >= 0.0f) {
-                float const delta_sqrt = sqrt(delta);
-                float const t1 = 0.5f * (-b - delta_sqrt) / a;
-                Vector3 const t1v = ray_origin + ray.direction * t1;
+                f32 const delta_sqrt = sqrt(delta);
+                f32 const t1 = 0.5f * (-b - delta_sqrt) / a;
+                math::Vector3 const t1v = ray_origin + ray.direction * t1;
                 if (t1 >= 0.0f && dot(t1v, cylinder_normal) >= 0 && dot(t1v, -cylinder_normal) >= cap2_plane_dist) {
                     Raycast_Hit hit;
                     hit.distance = t1;
@@ -161,8 +162,8 @@ namespace anton {
                     result = hit;
                 }
 
-                float const t2 = 0.5f * (-b + delta_sqrt) / a;
-                Vector3 const t2v = ray_origin + ray.direction * t2;
+                f32 const t2 = 0.5f * (-b + delta_sqrt) / a;
+                math::Vector3 const t2v = ray_origin + ray.direction * t2;
                 if (t2 >= 0.0f && (!result || t2 < t1) && dot(t2v, cylinder_normal) >= 0 && dot(t2v, -cylinder_normal) >= cap2_plane_dist) {
                     Raycast_Hit hit;
                     hit.distance = t2;
@@ -184,10 +185,10 @@ namespace anton {
 
         // Cap 1
         {
-            float const angle_cos = dot(ray.direction, cylinder_normal);
-            float const coeff = (-dot(ray.origin, cylinder_normal)) / angle_cos;
-            Vector3 const hit_point = ray_origin + ray.direction * coeff;
-            if (abs(angle_cos) > constants::epsilon && coeff >= 0.0f && (!result || coeff < result->distance) && length_squared(hit_point) <= radius_squared) {
+            f32 const angle_cos = dot(ray.direction, cylinder_normal);
+            f32 const coeff = (-dot(ray.origin, cylinder_normal)) / angle_cos;
+            math::Vector3 const hit_point = ray_origin + ray.direction * coeff;
+            if (abs(angle_cos) > math::epsilon && coeff >= 0.0f && (!result || coeff < result->distance) && length_squared(hit_point) <= radius_squared) {
                 Raycast_Hit hit;
                 hit.distance = coeff;
                 hit.hit_point = hit_point + vertex1;
@@ -197,10 +198,10 @@ namespace anton {
 
         // Cap 2
         {
-            float const angle_cos = dot(ray.direction, -cylinder_normal);
-            float const coeff = (cap2_plane_dist - dot(ray.origin, -cylinder_normal)) / angle_cos;
-            Vector3 const hit_point = ray_origin + ray.direction * coeff;
-            if (abs(angle_cos) > constants::epsilon && coeff >= 0.0f && (!result || coeff < result->distance) &&
+            f32 const angle_cos = dot(ray.direction, -cylinder_normal);
+            f32 const coeff = (cap2_plane_dist - dot(ray.origin, -cylinder_normal)) / angle_cos;
+            math::Vector3 const hit_point = ray_origin + ray.direction * coeff;
+            if (abs(angle_cos) > math::epsilon && coeff >= 0.0f && (!result || coeff < result->distance) &&
                 length_squared(hit_point - vert2) <= radius_squared) {
                 Raycast_Hit hit;
                 hit.distance = coeff;
@@ -211,6 +212,6 @@ namespace anton {
 
         return result;
     }
-} // namespace anton
+} // namespace anton::gizmo
 
 #endif // !ANTON_INTERSECTION_TESTS_HPP_INCLUDE

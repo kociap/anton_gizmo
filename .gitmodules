@@ -1,0 +1,3 @@
+[submodule "ext/anton_math"]
+	path = ext/anton_math
+	url = https://github.com/kociap/anton_math.git
