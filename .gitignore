@@ -1,5 +1,4 @@
 .vs
 .vscode
-CMakeFiles
-out
-*.ninja
+build
+build.bat
