@@ -21,26 +21,26 @@ endif()
 
 project(anton_gizmo)
 
-add_subdirectory(ext/anton_math)
+add_subdirectory(ext/anton_core)
 
 add_library(anton_gizmo)
 set_target_properties(anton_gizmo PROPERTIES CXX_STANDARD 17 CXX_EXTENSIONS OFF)
 target_compile_options(anton_gizmo PRIVATE ${ANTON_GIZMO_COMPILE_FLAGS})
-target_link_libraries(anton_gizmo PUBLIC anton_math)
+target_link_libraries(anton_gizmo PUBLIC anton_core)
 target_sources(anton_gizmo
     PUBLIC 
     "${CMAKE_CURRENT_SOURCE_DIR}/public/anton/gizmo/arrow_3d.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/public/anton/gizmo/common.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/public/anton/gizmo/dial_3d.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/public/anton/gizmo/gizmo.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/public/anton/gizmo/utils.hpp"
-
+    "${CMAKE_CURRENT_SOURCE_DIR}/public/anton/gizmo/manipulate.hpp"
+    
     PRIVATE 
     "${CMAKE_CURRENT_SOURCE_DIR}/private/arrow_3d.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/private/common.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/private/dial_3d.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/private/intersection_tests.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/private/utils.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/private/utils.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/private/manipulate.cpp"
 )
 target_include_directories(anton_gizmo
     PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/public"

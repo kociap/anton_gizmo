@@ -5,7 +5,7 @@
 #include <anton/math/transform.hpp>
 #include <anton/math/vector3.hpp>
 #include <anton/math/vector4.hpp>
-#include <optional>
+#include <anton/optional.hpp>
 
 namespace anton::gizmo {
     class Raycast_Hit {
@@ -24,7 +24,7 @@ namespace anton::gizmo {
         math::Vector3 halfwidths;
     };
 
-    inline std::optional<Raycast_Hit> intersect_ray_plane(Ray const ray, math::Vector3 const plane_normal, f32 const plane_distance) {
+    inline Optional<Raycast_Hit> intersect_ray_plane(Ray const ray, math::Vector3 const plane_normal, f32 const plane_distance) {
         f32 const angle_cos = dot(ray.direction, plane_normal);
         f32 const coeff = (plane_distance - dot(ray.origin, plane_normal)) / angle_cos;
         if (math::abs(angle_cos) > math::epsilon && coeff >= 0.0f) {
@@ -33,13 +33,14 @@ namespace anton::gizmo {
             out.hit_point = ray.origin + ray.direction * coeff;
             return out;
         } else {
-            return std::nullopt;
+            return null_optional;
         }
     }
 
-    inline std::optional<Raycast_Hit> intersect_ray_cone(Ray const ray, math::Vector3 const vertex, math::Vector3 const direction, f32 const angle_cos,
-                                                         f32 const height) {
-        std::optional<Raycast_Hit> result = std::nullopt;
+    // direction is the vector which defines where the cone is expanding
+    inline Optional<Raycast_Hit> intersect_ray_cone(Ray const ray, math::Vector3 const vertex, math::Vector3 const direction, f32 const angle_cos,
+                                                    f32 const height) {
+        Optional<Raycast_Hit> result = null_optional;
 
         math::Vector3 const ray_origin = ray.origin - vertex;
         f32 const angle_cos_square = angle_cos * angle_cos;
@@ -52,7 +53,7 @@ namespace anton::gizmo {
         if (a > math::epsilon || a < -math::epsilon) {
             f32 const delta = b * b - 4.0f * a * c;
             if (delta >= 0.0f) {
-                f32 const delta_sqrt = sqrt(delta);
+                f32 const delta_sqrt = math::sqrt(delta);
                 f32 const t1 = 0.5f * (-b - delta_sqrt) / a;
                 math::Vector3 const t1v = ray_origin + ray.direction * t1;
                 if (f32 const point_height = dot(direction, t1v); t1 >= 0.0f && point_height >= 0 && point_height <= height) {
@@ -100,8 +101,8 @@ namespace anton::gizmo {
             }
         }
 
-        if (std::optional<Raycast_Hit> const hit = intersect_ray_plane({ray_origin, ray.direction}, direction, height);
-            hit.has_value() && (!result || hit->distance < result->distance) &&
+        if (Optional<Raycast_Hit> const hit = intersect_ray_plane({ray_origin, ray.direction}, direction, height);
+            hit.holds_value() && (!result || hit->distance < result->distance) &&
             (length_squared(hit->hit_point - dot(hit->hit_point, direction) * direction) * angle_cos_square <= height * height)) {
             result = hit;
         }
@@ -109,7 +110,7 @@ namespace anton::gizmo {
         return result;
     }
 
-    inline std::optional<Raycast_Hit> intersect_ray_obb(Ray ray, OBB obb) {
+    inline Optional<Raycast_Hit> intersect_ray_obb(Ray ray, OBB obb) {
         math::Matrix4 rotation =
             math::Matrix4(math::Vector4{obb.local_x, 0}, math::Vector4{obb.local_y, 0}, math::Vector4{obb.local_z, 0}, math::Vector4{0, 0, 0, 1});
         // Center OBB at 0
@@ -132,12 +133,12 @@ namespace anton::gizmo {
             out.hit_point = ray.origin + ray.direction * tmax;
             return out;
         } else {
-            return std::nullopt;
+            return null_optional;
         }
     }
 
-    inline std::optional<Raycast_Hit> intersect_ray_cylinder(Ray const ray, math::Vector3 const vertex1, math::Vector3 const vertex2, f32 const radius) {
-        std::optional<Raycast_Hit> result = std::nullopt;
+    inline Optional<Raycast_Hit> intersect_ray_cylinder(Ray const ray, math::Vector3 const vertex1, math::Vector3 const vertex2, f32 const radius) {
+        Optional<Raycast_Hit> result = null_optional;
 
         f32 const radius_squared = radius * radius;
         math::Vector3 const ray_origin = ray.origin - vertex1;
@@ -152,7 +153,7 @@ namespace anton::gizmo {
         if (a > math::epsilon || a < -math::epsilon) {
             f32 const delta = b * b - 4 * a * c;
             if (delta >= 0.0f) {
-                f32 const delta_sqrt = sqrt(delta);
+                f32 const delta_sqrt = math::sqrt(delta);
                 f32 const t1 = 0.5f * (-b - delta_sqrt) / a;
                 math::Vector3 const t1v = ray_origin + ray.direction * t1;
                 if (t1 >= 0.0f && dot(t1v, cylinder_normal) >= 0 && dot(t1v, -cylinder_normal) >= cap2_plane_dist) {
@@ -188,7 +189,7 @@ namespace anton::gizmo {
             f32 const angle_cos = dot(ray.direction, cylinder_normal);
             f32 const coeff = (-dot(ray.origin, cylinder_normal)) / angle_cos;
             math::Vector3 const hit_point = ray_origin + ray.direction * coeff;
-            if (abs(angle_cos) > math::epsilon && coeff >= 0.0f && (!result || coeff < result->distance) && length_squared(hit_point) <= radius_squared) {
+            if (math::abs(angle_cos) > math::epsilon && coeff >= 0.0f && (!result || coeff < result->distance) && length_squared(hit_point) <= radius_squared) {
                 Raycast_Hit hit;
                 hit.distance = coeff;
                 hit.hit_point = hit_point + vertex1;
@@ -201,7 +202,7 @@ namespace anton::gizmo {
             f32 const angle_cos = dot(ray.direction, -cylinder_normal);
             f32 const coeff = (cap2_plane_dist - dot(ray.origin, -cylinder_normal)) / angle_cos;
             math::Vector3 const hit_point = ray_origin + ray.direction * coeff;
-            if (abs(angle_cos) > math::epsilon && coeff >= 0.0f && (!result || coeff < result->distance) &&
+            if (math::abs(angle_cos) > math::epsilon && coeff >= 0.0f && (!result || coeff < result->distance) &&
                 length_squared(hit_point - vert2) <= radius_squared) {
                 Raycast_Hit hit;
                 hit.distance = coeff;
