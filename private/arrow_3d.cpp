@@ -25,8 +25,8 @@ namespace anton::gizmo {
             cone.emplace_back(0.0f, 0.0f, -shaft_length - cap_length);
             // Cone base
             cone.emplace_back(0.0f, 0.0f, -shaft_length);
-            cone.emplace_back(v1.x * cap_size, v1.y * cap_size, -shaft_length);
             cone.emplace_back(v2.x * cap_size, v2.y * cap_size, -shaft_length);
+            cone.emplace_back(v1.x * cap_size, v1.y * cap_size, -shaft_length);
             // We don't generate 1st cylinder cap
             // Cylinder
             cone.emplace_back(v1.x * shaft_diameter, v1.y * shaft_diameter, -shaft_length);
@@ -37,8 +37,8 @@ namespace anton::gizmo {
             cone.emplace_back(v1.x * shaft_diameter, v1.y * shaft_diameter, -shaft_length);
             // 2nd cylinder cap
             cone.emplace_back(0.0f, 0.0f, 0.0f);
-            cone.emplace_back(v1.x * cap_size, v1.y * cap_size, 0.0f);
-            cone.emplace_back(v2.x * cap_size, v2.y * cap_size, 0.0f);
+            cone.emplace_back(v1.x * shaft_diameter, v1.y * shaft_diameter, 0.0f);
+            cone.emplace_back(v2.x * shaft_diameter, v2.y * shaft_diameter, 0.0f);
         }
         return cone;
     }
@@ -72,8 +72,8 @@ namespace anton::gizmo {
             math::Vector3& v2 = circle[(i + 1) % vert_count];
             // 1st cylinder cap
             cube.emplace_back(0.0f, 0.0f, 0.0f);
-            cube.emplace_back(v2.x * cap_size, v2.y * cap_size, 0.0f);
-            cube.emplace_back(v1.x * cap_size, v1.y * cap_size, 0.0f);
+            cube.emplace_back(v1.x * shaft_diameter, v1.y * shaft_diameter, 0.0f);
+            cube.emplace_back(v2.x * shaft_diameter, v2.y * shaft_diameter, 0.0f);
             // Cylinder
             cube.emplace_back(v1.x * shaft_diameter, v1.y * shaft_diameter, -shaft_length);
             cube.emplace_back(v1.x * shaft_diameter, v1.y * shaft_diameter, 0.0f);
@@ -83,8 +83,8 @@ namespace anton::gizmo {
             cube.emplace_back(v1.x * shaft_diameter, v1.y * shaft_diameter, -shaft_length);
             // 2nd cylinder cap
             cube.emplace_back(0.0f, 0.0f, 0.0f);
-            cube.emplace_back(v1.x * cap_size, v1.y * cap_size, -shaft_length);
-            cube.emplace_back(v2.x * cap_size, v2.y * cap_size, -shaft_length);
+            cube.emplace_back(v2.x * shaft_diameter, v2.y * shaft_diameter, -shaft_length);
+            cube.emplace_back(v1.x * shaft_diameter, v1.y * shaft_diameter, -shaft_length);
         }
         return cube;
     }
