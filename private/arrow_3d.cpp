@@ -89,7 +89,7 @@ namespace anton::gizmo {
         return cube;
     }
 
-    anton::Array<math::Vector3> generate_arrow_3d_geometry(Arrow_3D const& arrow, u32 const vertex_count) {
+    anton::Array<math::Vector3> generate_arrow_3d_geometry(Arrow_3D const& arrow, i32 const vertex_count) {
         switch (arrow.draw_style) {
             case Arrow_3D_Style::cone: {
                 return generate_cone_geometry(arrow, vertex_count);
