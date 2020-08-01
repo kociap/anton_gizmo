@@ -12,7 +12,7 @@ namespace anton::gizmo {
     };
 
     // target_size - pixels
-    inline f32 compute_scale(math::Matrix4 const world_transform, u32 const target_size, math::Matrix4 const projection, math::Vector2 const viewport_size) {
+    inline f32 compute_scale(math::Matrix4 const& world_transform, u32 const target_size, math::Matrix4 const& projection, math::Vector2 const viewport_size) {
         f32 const pixel_size = 1 / viewport_size.y;
         f32 const projected_w_comp = (projection * world_transform[3]).w;
         return /* scale_basis * */ target_size * pixel_size * projected_w_comp;

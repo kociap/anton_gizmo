@@ -15,7 +15,7 @@ namespace anton::gizmo {
         math::Vector3 vertex = {0, 0.5f, 0};
         math::Quaternion rotated_vec = math::Quaternion(vertex.x, vertex.y, vertex.z, 0);
         anton::Array<math::Vector3> circle_points{anton::reserve, vert_count};
-        for (i64 i = 0; i <= vert_count; ++i) {
+        for(i64 i = 0; i <= vert_count; ++i) {
             rotated_vec = rotation_quat * rotated_vec * conjugate(rotation_quat);
             circle_points.emplace_back(rotated_vec.x, rotated_vec.y, 0.0f);
         }

@@ -27,7 +27,7 @@ namespace anton::gizmo {
     inline Optional<Raycast_Hit> intersect_ray_plane(Ray const ray, math::Vector3 const plane_normal, f32 const plane_distance) {
         f32 const angle_cos = dot(ray.direction, plane_normal);
         f32 const coeff = (plane_distance - dot(ray.origin, plane_normal)) / angle_cos;
-        if (math::abs(angle_cos) > math::epsilon && coeff >= 0.0f) {
+        if(math::abs(angle_cos) > math::epsilon && coeff >= 0.0f) {
             Raycast_Hit out;
             out.distance = coeff;
             out.hit_point = ray.origin + ray.direction * coeff;
@@ -50,13 +50,13 @@ namespace anton::gizmo {
         math::Vector3 const ray_origin_prim = ray_origin_prim_len * direction;
         f32 const b = 2.0f * angle_cos_square * dot(ray_origin - ray_origin_prim, ray.direction - ray_dir_prim) - 2.0f * dot(ray_origin_prim, ray_dir_prim);
         f32 const c = angle_cos_square * length_squared(ray_origin - ray_origin_prim) - length_squared(ray_origin_prim);
-        if (a > math::epsilon || a < -math::epsilon) {
+        if(a > math::epsilon || a < -math::epsilon) {
             f32 const delta = b * b - 4.0f * a * c;
-            if (delta >= 0.0f) {
+            if(delta >= 0.0f) {
                 f32 const delta_sqrt = math::sqrt(delta);
                 f32 const t1 = 0.5f * (-b - delta_sqrt) / a;
                 math::Vector3 const t1v = ray_origin + ray.direction * t1;
-                if (f32 const point_height = dot(direction, t1v); t1 >= 0.0f && point_height >= 0 && point_height <= height) {
+                if(f32 const point_height = dot(direction, t1v); t1 >= 0.0f && point_height >= 0 && point_height <= height) {
                     Raycast_Hit hit;
                     hit.distance = t1;
                     hit.hit_point = t1v + vertex;
@@ -65,8 +65,8 @@ namespace anton::gizmo {
 
                 f32 const t2 = 0.5f * (-b + delta_sqrt) / a;
                 math::Vector3 const t2v = ray_origin + ray.direction * t2;
-                if (f32 const point_height = dot(direction, t2v);
-                    t2 >= 0.0f && point_height >= 0 && point_height <= height && (!result || t2 < result->distance)) {
+                if(f32 const point_height = dot(direction, t2v);
+                   t2 >= 0.0f && point_height >= 0 && point_height <= height && (!result || t2 < result->distance)) {
                     Raycast_Hit hit;
                     hit.distance = t2;
                     hit.hit_point = t2v + vertex;
@@ -75,10 +75,10 @@ namespace anton::gizmo {
             }
         } else {
             // Ray is parallel to the cone boundary
-            if (b > math::epsilon || b < math::epsilon) {
+            if(b > math::epsilon || b < math::epsilon) {
                 f32 const t = -c / b;
                 f32 const point_height = dot(ray_origin + ray.direction * t, direction);
-                if (t >= 0 && point_height <= height && point_height >= 0.0f) {
+                if(t >= 0 && point_height <= height && point_height >= 0.0f) {
                     Raycast_Hit hit;
                     hit.distance = t;
                     hit.hit_point = ray.origin + ray.direction * t;
@@ -86,13 +86,13 @@ namespace anton::gizmo {
                 }
             } else {
                 // Ray is on the boundary of the infinite cone
-                if (ray_origin_prim_len <= height && ray_origin_prim_len >= 0.0f) {
+                if(ray_origin_prim_len <= height && ray_origin_prim_len >= 0.0f) {
                     // Origin lies on the cone's coundary
                     Raycast_Hit hit;
                     hit.distance = 0.0f;
                     hit.hit_point = ray.origin;
                     result = hit;
-                } else if (f32 const t = -dot(ray_origin, ray.direction); t >= 0.0f) {
+                } else if(f32 const t = -dot(ray_origin, ray.direction); t >= 0.0f) {
                     Raycast_Hit hit;
                     hit.distance = t;
                     hit.hit_point = ray.origin + ray.direction * t;
@@ -101,9 +101,9 @@ namespace anton::gizmo {
             }
         }
 
-        if (Optional<Raycast_Hit> const hit = intersect_ray_plane({ray_origin, ray.direction}, direction, height);
-            hit.holds_value() && (!result || hit->distance < result->distance) &&
-            (length_squared(hit->hit_point - dot(hit->hit_point, direction) * direction) * angle_cos_square <= height * height)) {
+        if(Optional<Raycast_Hit> const hit = intersect_ray_plane({ray_origin, ray.direction}, direction, height);
+           hit.holds_value() && (!result || hit->distance < result->distance) &&
+           (length_squared(hit->hit_point - dot(hit->hit_point, direction) * direction) * angle_cos_square <= height * height)) {
             result = hit;
         }
 
@@ -120,14 +120,14 @@ namespace anton::gizmo {
         // AABB slab test
         f32 tmin = -math::infinity;
         f32 tmax = math::infinity;
-        for (int i = 0; i < 3; ++i) {
+        for(int i = 0; i < 3; ++i) {
             f32 tx1 = (obb.halfwidths[i] - ray_origin[i]) / ray_dir[i];
             f32 tx2 = (-obb.halfwidths[i] - ray_origin[i]) / ray_dir[i];
             tmax = math::min(tmax, math::max(tx1, tx2));
             tmin = math::max(tmin, math::min(tx1, tx2));
         }
 
-        if (tmax >= 0 && tmax >= tmin) {
+        if(tmax >= 0 && tmax >= tmin) {
             Raycast_Hit out;
             out.distance = tmax;
             out.hit_point = ray.origin + ray.direction * tmax;
@@ -150,13 +150,13 @@ namespace anton::gizmo {
         f32 const b = 2.0f * dot(ray_origin, ray.direction) - 2.0f * ray_origin_prim_len * ray_dir_prim_len;
         f32 const c = length_squared(ray_origin) - ray_origin_prim_len * ray_origin_prim_len - radius_squared;
         f32 const cap2_plane_dist = dot(vert2, -cylinder_normal);
-        if (a > math::epsilon || a < -math::epsilon) {
+        if(a > math::epsilon || a < -math::epsilon) {
             f32 const delta = b * b - 4 * a * c;
-            if (delta >= 0.0f) {
+            if(delta >= 0.0f) {
                 f32 const delta_sqrt = math::sqrt(delta);
                 f32 const t1 = 0.5f * (-b - delta_sqrt) / a;
                 math::Vector3 const t1v = ray_origin + ray.direction * t1;
-                if (t1 >= 0.0f && dot(t1v, cylinder_normal) >= 0 && dot(t1v, -cylinder_normal) >= cap2_plane_dist) {
+                if(t1 >= 0.0f && dot(t1v, cylinder_normal) >= 0 && dot(t1v, -cylinder_normal) >= cap2_plane_dist) {
                     Raycast_Hit hit;
                     hit.distance = t1;
                     hit.hit_point = t1v + vertex1;
@@ -165,7 +165,7 @@ namespace anton::gizmo {
 
                 f32 const t2 = 0.5f * (-b + delta_sqrt) / a;
                 math::Vector3 const t2v = ray_origin + ray.direction * t2;
-                if (t2 >= 0.0f && (!result || t2 < t1) && dot(t2v, cylinder_normal) >= 0 && dot(t2v, -cylinder_normal) >= cap2_plane_dist) {
+                if(t2 >= 0.0f && (!result || t2 < t1) && dot(t2v, cylinder_normal) >= 0 && dot(t2v, -cylinder_normal) >= cap2_plane_dist) {
                     Raycast_Hit hit;
                     hit.distance = t2;
                     hit.hit_point = t2v + vertex1;
@@ -174,8 +174,8 @@ namespace anton::gizmo {
             }
         } else {
             // Ray is parallel to the cylinder
-            if (length_squared(ray_origin - ray_origin_prim_len * cylinder_normal) == radius_squared && dot(ray_origin, cylinder_normal) >= 0 &&
-                dot(ray_origin, -cylinder_normal) >= cap2_plane_dist) {
+            if(length_squared(ray_origin - ray_origin_prim_len * cylinder_normal) == radius_squared && dot(ray_origin, cylinder_normal) >= 0 &&
+               dot(ray_origin, -cylinder_normal) >= cap2_plane_dist) {
                 // Ray origin lies on the cylinder boundary
                 Raycast_Hit hit;
                 hit.distance = 0.0f;
@@ -189,7 +189,7 @@ namespace anton::gizmo {
             f32 const angle_cos = dot(ray.direction, cylinder_normal);
             f32 const coeff = (-dot(ray.origin, cylinder_normal)) / angle_cos;
             math::Vector3 const hit_point = ray_origin + ray.direction * coeff;
-            if (math::abs(angle_cos) > math::epsilon && coeff >= 0.0f && (!result || coeff < result->distance) && length_squared(hit_point) <= radius_squared) {
+            if(math::abs(angle_cos) > math::epsilon && coeff >= 0.0f && (!result || coeff < result->distance) && length_squared(hit_point) <= radius_squared) {
                 Raycast_Hit hit;
                 hit.distance = coeff;
                 hit.hit_point = hit_point + vertex1;
@@ -202,8 +202,8 @@ namespace anton::gizmo {
             f32 const angle_cos = dot(ray.direction, -cylinder_normal);
             f32 const coeff = (cap2_plane_dist - dot(ray.origin, -cylinder_normal)) / angle_cos;
             math::Vector3 const hit_point = ray_origin + ray.direction * coeff;
-            if (math::abs(angle_cos) > math::epsilon && coeff >= 0.0f && (!result || coeff < result->distance) &&
-                length_squared(hit_point - vert2) <= radius_squared) {
+            if(math::abs(angle_cos) > math::epsilon && coeff >= 0.0f && (!result || coeff < result->distance) &&
+               length_squared(hit_point - vert2) <= radius_squared) {
                 Raycast_Hit hit;
                 hit.distance = coeff;
                 hit.hit_point = hit_point + vertex1;

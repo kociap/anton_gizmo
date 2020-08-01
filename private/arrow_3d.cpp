@@ -16,7 +16,7 @@ namespace anton::gizmo {
         f32 const shaft_length = arrow.shaft_length;
         f32 const shaft_diameter = arrow.shaft_diameter;
         anton::Array<math::Vector3> cone{anton::reserve, (i64)vert_count * (3 + 3 + 6 + 3)};
-        for (i64 i = 0; i < vert_count; ++i) {
+        for(i64 i = 0; i < vert_count; ++i) {
             math::Vector3& v1 = circle[i];
             math::Vector3& v2 = circle[(i + 1) % vert_count];
             // Cone
@@ -67,7 +67,7 @@ namespace anton::gizmo {
         cube.emplace_back(offset + math::Vector3{half_size, half_size, half_size});
         cube.emplace_back(offset + math::Vector3{-half_size, half_size, half_size});
         // Generate shaft
-        for (i64 i = 0; i < vert_count; ++i) {
+        for(i64 i = 0; i < vert_count; ++i) {
             math::Vector3& v1 = circle[i];
             math::Vector3& v2 = circle[(i + 1) % vert_count];
             // 1st cylinder cap
@@ -90,7 +90,7 @@ namespace anton::gizmo {
     }
 
     anton::Array<math::Vector3> generate_arrow_3d_geometry(Arrow_3D const& arrow, i32 const vertex_count) {
-        switch (arrow.draw_style) {
+        switch(arrow.draw_style) {
             case Arrow_3D_Style::cone: {
                 return generate_cone_geometry(arrow, vertex_count);
             } break;
@@ -101,28 +101,24 @@ namespace anton::gizmo {
         }
     }
 
-    Optional<f32> intersect_arrow_3d(Ray const ray, Arrow_3D const& arrow, math::Matrix4 const& world_transform, math::Matrix4 const& view_projection,
-                                     math::Vector2 const viewport_size) {
-        f32 const scale = compute_scale(world_transform, arrow.size, view_projection, viewport_size);
-        switch (arrow.draw_style) {
+    Optional<f32> intersect_arrow_3d(Ray const ray, Arrow_3D const& arrow, math::Matrix4 const& world_transform) {
+        switch(arrow.draw_style) {
             case Arrow_3D_Style::cone: {
                 Optional<f32> result = null_optional;
-
                 math::Vector3 const vertex1 = math::Vector3(world_transform * math::Vector4(0, 0, 0, 1));
-                math::Vector3 const vertex2 = math::Vector3(world_transform * math::Vector4(0, 0, -arrow.shaft_length * scale, 1));
-                f32 const radius = 0.5f * arrow.shaft_diameter * scale;
-                if (Optional<Raycast_Hit> const hit = intersect_ray_cylinder(ray, vertex1, vertex2, radius);
-                    hit.holds_value() && (!result || hit->distance < *result)) {
+                math::Vector3 const vertex2 = math::Vector3(world_transform * math::Vector4(0, 0, -arrow.shaft_length, 1));
+                f32 const radius = 0.5f * arrow.shaft_diameter;
+                if(Optional<Raycast_Hit> const hit = intersect_ray_cylinder(ray, vertex1, vertex2, radius);
+                   hit.holds_value() && (!result || hit->distance < *result)) {
                     result = hit->distance;
                 }
 
-                math::Vector3 const vertex =
-                    math::Vector3(world_transform * math::scale(scale) * math::Vector4(0.0f, 0.0f, -arrow.shaft_length - arrow.cap_length, 1.0f));
+                math::Vector3 const vertex = math::Vector3(world_transform * math::Vector4(0.0f, 0.0f, -arrow.shaft_length - arrow.cap_length, 1.0f));
                 math::Vector3 const direction = math::Vector3(world_transform * math::Vector4(0.0f, 0.0f, 1.0f, 0.0f));
                 f32 const angle_cos = arrow.cap_length * math::inv_sqrt(arrow.cap_length * arrow.cap_length + arrow.cap_size * arrow.cap_size);
-                f32 const height = arrow.cap_length * scale;
-                if (Optional<Raycast_Hit> const hit = intersect_ray_cone(ray, vertex, direction, angle_cos, height);
-                    hit.holds_value() && (!result || hit->distance < *result)) {
+                f32 const height = arrow.cap_length;
+                if(Optional<Raycast_Hit> const hit = intersect_ray_cone(ray, vertex, direction, angle_cos, height);
+                   hit.holds_value() && (!result || hit->distance < *result)) {
                     result = hit->distance;
                 }
 
@@ -131,12 +127,11 @@ namespace anton::gizmo {
 
             case Arrow_3D_Style::cube: {
                 Optional<f32> result = null_optional;
-
                 math::Vector3 const vertex1 = math::Vector3(world_transform * math::Vector4(0, 0, 0, 1));
-                math::Vector3 const vertex2 = math::Vector3(world_transform * math::Vector4(0, 0, -arrow.shaft_length * scale, 1));
-                f32 const radius = 0.5f * arrow.shaft_diameter * scale;
-                if (Optional<Raycast_Hit> const hit = intersect_ray_cylinder(ray, vertex1, vertex2, radius);
-                    hit.holds_value() && (!result || hit->distance < *result)) {
+                math::Vector3 const vertex2 = math::Vector3(world_transform * math::Vector4(0, 0, -arrow.shaft_length, 1));
+                f32 const radius = 0.5f * arrow.shaft_diameter;
+                if(Optional<Raycast_Hit> const hit = intersect_ray_cylinder(ray, vertex1, vertex2, radius);
+                   hit.holds_value() && (!result || hit->distance < *result)) {
                     result = hit->distance;
                 }
 
@@ -144,9 +139,9 @@ namespace anton::gizmo {
                 cube_bounding_vol.local_x = math::Vector3(world_transform * math::Vector4(1.0f, 0.0f, 0.0f, 0.0f));
                 cube_bounding_vol.local_y = math::Vector3(world_transform * math::Vector4(0.0f, 1.0f, 0.0f, 0.0f));
                 cube_bounding_vol.local_z = math::Vector3(world_transform * math::Vector4(0.0f, 0.0f, -1.0f, 0.0f));
-                cube_bounding_vol.halfwidths = math::Vector3{0.5f * arrow.cap_size * scale};
-                cube_bounding_vol.center = math::Vector3(world_transform * math::Vector4(0.0f, 0.0f, (-arrow.shaft_length + 0.5f * arrow.cap_size) * scale));
-                if (Optional<Raycast_Hit> const hit = intersect_ray_obb(ray, cube_bounding_vol); hit.holds_value() && (!result || hit->distance < *result)) {
+                cube_bounding_vol.halfwidths = math::Vector3{0.5f * arrow.cap_size};
+                cube_bounding_vol.center = math::Vector3(world_transform * math::Vector4(0.0f, 0.0f, (-arrow.shaft_length + 0.5f * arrow.cap_size)));
+                if(Optional<Raycast_Hit> const hit = intersect_ray_obb(ray, cube_bounding_vol); hit.holds_value() && (!result || hit->distance < *result)) {
                     result = hit->distance;
                 }
 

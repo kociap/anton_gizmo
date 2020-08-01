@@ -13,8 +13,6 @@ namespace anton::gizmo {
 
     struct Arrow_3D {
         Arrow_3D_Style draw_style;
-        // Size in pixels
-        i32 size;
         // For cone it's the diameter of the base of the cone.
         // For cube it's the length of the edge of the cube.
         f32 cap_size;
@@ -39,6 +37,5 @@ namespace anton::gizmo {
     // intersect_arrow_3d
     // Tests the arrow for intersection and returns the distance to the intersection point along the ray if the ray intersects the bounding volumes.
     //
-    [[nodiscard]] Optional<f32> intersect_arrow_3d(Ray ray, Arrow_3D const& arrow, math::Matrix4 const& world_transform, math::Matrix4 const& view_projection,
-                                                   u32 viewport_width, u32 viewport_height);
+    [[nodiscard]] Optional<f32> intersect_arrow_3d(Ray ray, Arrow_3D const& arrow, math::Matrix4 const& world_transform);
 } // namespace anton::gizmo
