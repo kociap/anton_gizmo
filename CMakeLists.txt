@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.13)
+cmake_minimum_required(VERSION 3.15)
 
 string(FIND "${CMAKE_CXX_COMPILER}" "clang++" ANTON_GIZMO_COMPILER_CLANGPP)
 if(ANTON_GIZMO_COMPILER_CLANGPP GREATER -1)
@@ -21,7 +21,12 @@ endif()
 
 project(anton_gizmo)
 
-add_subdirectory(ext/anton_core)
+# Add anton_core
+FetchContent_Declare(
+    anton_core
+    GIT_REPOSITORY https://github.com/kociap/anton_core.git
+)
+FetchContent_MakeAvailable(anton_core)
 
 add_library(anton_gizmo)
 set_target_properties(anton_gizmo PROPERTIES CXX_STANDARD 17 CXX_EXTENSIONS OFF)
