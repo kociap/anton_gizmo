@@ -1,54 +1,47 @@
 #include <anton/gizmo/dial_3d.hpp>
 
 #include <anton/math/matrix4.hpp>
+#include <anton/math/quaternion.hpp>
 #include <anton/math/vector2.hpp>
 #include <anton/math/vector3.hpp>
 #include <intersection_tests.hpp>
 #include <utils.hpp>
 
 namespace anton::gizmo {
-    u32 get_required_buffer_size_dial_3d(u32 vertex_count) {
-        return 0;
+    Array<math::Vector3> generate_dial_3d_geometry(Dial_3D const& dial, i32 const vertex_count_major, i32 const vertex_count_minor) {
+        Array<math::Vector3> major = generate_circle(math::Vector3{0.0f}, math::Vector3{0.0f, 0.0f, -1.0f}, dial.major_diameter, vertex_count_major);
+        Array<Array<math::Vector3>> torus_rings{reserve, vertex_count_major};
+        for(i64 i = 0; i < vertex_count_major; ++i) {
+            math::Vector3 const& v1 = major[i];
+            math::Vector3 const& v2 = major[(i + 1) % vertex_count_major];
+            math::Vector3 const plane_normal = math::normalize(v1 - v2);
+            Array<math::Vector3> ring = generate_circle(v2, plane_normal, dial.minor_diameter, vertex_count_minor);
+            torus_rings.emplace_back(move(ring));
+        }
+
+        Array<math::Vector3> vertices;
+        for(i64 i = 0; i < vertex_count_major; ++i) {
+            Array<math::Vector3> const& r1 = torus_rings[i];
+            Array<math::Vector3> const& r2 = torus_rings[(i + 1) % vertex_count_major];
+            for(i64 j = 0; j < vertex_count_minor; ++j) {
+                math::Vector3 const& r1_v1 = r1[j];
+                math::Vector3 const& r1_v2 = r1[(j + 1) % vertex_count_minor];
+                math::Vector3 const& r2_v1 = r2[j];
+                math::Vector3 const& r2_v2 = r2[(j + 1) % vertex_count_minor];
+                // 1st triangle
+                vertices.emplace_back(r2_v1);
+                vertices.emplace_back(r2_v2);
+                vertices.emplace_back(r1_v2);
+                // 2nd triangle
+                vertices.emplace_back(r1_v1);
+                vertices.emplace_back(r2_v1);
+                vertices.emplace_back(r1_v2);
+            }
+        }
+        return vertices;
     }
 
-    void generate_dial_3d_geometry(u32 const vertex_count, Slice<math::Vector3> const vertices) {
-        // f32 const angle = math::pi / vertex_count;
-        // for (u64 i = 0; i <= 2 * u64(vertex_count); i += 2) {
-        //     math::Vector3 const pos = {cos(angle * i), sin(angle * i), 0};
-        //     vertices[i] = pos;
-        //     vertices[i + 1] = pos;
-        // }
-
-        // for (u64 i = 2; i <= 2 * u64(vertex_count) - 2; i += 2) {
-        //     // normal = (vert[i] - vert[i - 2]) + (vert[i + 2] - vert[i])
-        //     math::Vector3 const normal = normalize(vertices[i + 2] - vertices[i - 2]);
-        //     rotation_axes[i] = normal;
-        //     rotation_axes[i + 1] = normal;
-
-        //     math::Vector3 const tangent = math::Vector3{-normal.y, normal.x, 0};
-        //     math::Vector3 const line_segment = normalize(vertices[i] - vertices[i - 2]);
-        //     f32 const factor = 1.0f / abs(dot(math::Vector3{-line_segment.y, line_segment.x, 0}, tangent));
-        //     scale_factors[i] = factor;
-        //     scale_factors[i + 1] = factor;
-        // }
-
-        // // First and last vertices are duplicates
-        // math::Vector3 const normal = normalize(vertices[2] - vertices[2 * vertex_count - 2]);
-        // rotation_axes[0] = normal;
-        // rotation_axes[1] = normal;
-        // rotation_axes[2 * vertex_count] = normal;
-        // rotation_axes[2 * vertex_count + 1] = normal;
-
-        // math::Vector3 const line_segment = normalize(vertices[0] - vertices[2 * vertex_count - 2]);
-        // math::Vector3 const tangent = math::Vector3{-normal.y, normal.x, 0};
-        // f32 const factor = 1 / abs(dot(math::Vector3{-line_segment.y, line_segment.x, 0}, tangent));
-        // scale_factors[0] = factor;
-        // scale_factors[1] = factor;
-        // scale_factors[2 * vertex_count] = factor;
-        // scale_factors[2 * vertex_count + 1] = factor;
-    }
-
-    Optional<f32> intersect_dial_3d(Ray, Dial_3D, f32 const* const, f32 const* const, math::Vector2 const) {
+    Optional<f32> intersect_dial_3d(Ray const ray, Dial_3D const& dial, math::Matrix4 const& world_transform) {
         return null_optional;
     }
 } // namespace anton::gizmo

@@ -1,6 +1,5 @@
 #include <anton/gizmo/arrow_3d.hpp>
 
-#include <anton/array.hpp>
 #include <anton/math/matrix4.hpp>
 #include <anton/math/quaternion.hpp>
 #include <anton/math/vector2.hpp>
@@ -9,13 +8,13 @@
 #include <utils.hpp>
 
 namespace anton::gizmo {
-    [[nodiscard]] static anton::Array<math::Vector3> generate_cone_geometry(Arrow_3D const& arrow, i32 const vert_count) {
-        anton::Array<math::Vector3> circle = generate_circle(vert_count);
+    [[nodiscard]] static Array<math::Vector3> generate_cone_geometry(Arrow_3D const& arrow, i32 const vert_count) {
+        Array<math::Vector3> circle = generate_circle(math::Vector3{0.0f}, math::Vector3{0.0f, 0.0f, -1.0f}, 1.0f, vert_count);
         f32 const cap_size = arrow.cap_size;
         f32 const cap_length = arrow.cap_length;
         f32 const shaft_length = arrow.shaft_length;
         f32 const shaft_diameter = arrow.shaft_diameter;
-        anton::Array<math::Vector3> cone{anton::reserve, (i64)vert_count * (3 + 3 + 6 + 3)};
+        Array<math::Vector3> cone{reserve, (i64)vert_count * (3 + 3 + 6 + 3)};
         for(i64 i = 0; i < vert_count; ++i) {
             math::Vector3& v1 = circle[i];
             math::Vector3& v2 = circle[(i + 1) % vert_count];
@@ -43,14 +42,14 @@ namespace anton::gizmo {
         return cone;
     }
 
-    [[nodiscard]] static anton::Array<math::Vector3> generate_cube_geometry(Arrow_3D const& arrow, i32 const vert_count) {
-        anton::Array<math::Vector3> circle = generate_circle(vert_count);
+    [[nodiscard]] static Array<math::Vector3> generate_cube_geometry(Arrow_3D const& arrow, i32 const vert_count) {
+        Array<math::Vector3> circle = generate_circle(math::Vector3{0.0f}, math::Vector3{0.0f, 0.0f, -1.0f}, 1.0f, vert_count);
         f32 const shaft_length = math::clamp(arrow.shaft_length, 0.0f, 1.0f);
         f32 const cap_size = arrow.cap_size;
         f32 const shaft_diameter = arrow.shaft_diameter;
         f32 const half_size = cap_size / 2.0f;
         math::Vector3 const offset = {0, 0, -shaft_length + half_size};
-        anton::Array<math::Vector3> cube{anton::reserve, (i64)vert_count * (3 + 3 + 6 + 3)};
+        Array<math::Vector3> cube{reserve, (i64)vert_count * (3 + 3 + 6 + 3)};
         // Generate cube
         cube.emplace_back(offset + math::Vector3{half_size, -half_size, half_size});
         cube.emplace_back(offset + math::Vector3{-half_size, -half_size, half_size});

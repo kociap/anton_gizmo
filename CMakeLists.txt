@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.15)
+include(FetchContent)
 
 string(FIND "${CMAKE_CXX_COMPILER}" "clang++" ANTON_GIZMO_COMPILER_CLANGPP)
 if(ANTON_GIZMO_COMPILER_CLANGPP GREATER -1)
