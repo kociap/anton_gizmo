@@ -48,22 +48,50 @@ namespace anton::gizmo {
         f32 const shaft_diameter = arrow.shaft_diameter;
         f32 const half_size = 0.5f * arrow.cap_size;
         math::Vector3 const offset = {0, 0, -shaft_length + half_size};
-        Array<math::Vector3> cube{reserve, (i64)vert_count * (3 + 3 + 6 + 3)};
+        Array<math::Vector3> cube{reserve, 36 + (3 + 6 + 3) * (i64)vert_count};
         // Generate cube
-        cube.emplace_back(offset + math::Vector3{half_size, -half_size, half_size});
-        cube.emplace_back(offset + math::Vector3{-half_size, -half_size, half_size});
-        cube.emplace_back(offset + math::Vector3{half_size, -half_size, -half_size});
-        cube.emplace_back(offset + math::Vector3{-half_size, -half_size, -half_size});
-        cube.emplace_back(offset + math::Vector3{-half_size, half_size, -half_size});
-        cube.emplace_back(offset + math::Vector3{-half_size, -half_size, half_size});
+        // Top face
         cube.emplace_back(offset + math::Vector3{-half_size, half_size, half_size});
+        cube.emplace_back(offset + math::Vector3{half_size, half_size, half_size});
+        cube.emplace_back(offset + math::Vector3{-half_size, half_size, -half_size});
+        cube.emplace_back(offset + math::Vector3{-half_size, half_size, -half_size});
+        cube.emplace_back(offset + math::Vector3{half_size, half_size, half_size});
+        cube.emplace_back(offset + math::Vector3{half_size, half_size, -half_size});
+        // Bottom face
+        cube.emplace_back(offset + math::Vector3{-half_size, -half_size, half_size});
+        cube.emplace_back(offset + math::Vector3{-half_size, -half_size, -half_size});
         cube.emplace_back(offset + math::Vector3{half_size, -half_size, half_size});
+        cube.emplace_back(offset + math::Vector3{-half_size, -half_size, -half_size});
+        cube.emplace_back(offset + math::Vector3{half_size, -half_size, -half_size});
+        cube.emplace_back(offset + math::Vector3{half_size, -half_size, half_size});
+        // Right face
+        cube.emplace_back(offset + math::Vector3{half_size, half_size, half_size});
+        cube.emplace_back(offset + math::Vector3{half_size, -half_size, half_size});
+        cube.emplace_back(offset + math::Vector3{half_size, -half_size, -half_size});
         cube.emplace_back(offset + math::Vector3{half_size, half_size, half_size});
         cube.emplace_back(offset + math::Vector3{half_size, -half_size, -half_size});
         cube.emplace_back(offset + math::Vector3{half_size, half_size, -half_size});
-        cube.emplace_back(offset + math::Vector3{-half_size, half_size, -half_size});
-        cube.emplace_back(offset + math::Vector3{half_size, half_size, half_size});
+        // Left face
         cube.emplace_back(offset + math::Vector3{-half_size, half_size, half_size});
+        cube.emplace_back(offset + math::Vector3{-half_size, -half_size, -half_size});
+        cube.emplace_back(offset + math::Vector3{-half_size, -half_size, half_size});
+        cube.emplace_back(offset + math::Vector3{-half_size, half_size, half_size});
+        cube.emplace_back(offset + math::Vector3{-half_size, half_size, -half_size});
+        cube.emplace_back(offset + math::Vector3{-half_size, -half_size, -half_size});
+        // Front face
+        cube.emplace_back(offset + math::Vector3{-half_size, half_size, -half_size});
+        cube.emplace_back(offset + math::Vector3{half_size, half_size, -half_size});
+        cube.emplace_back(offset + math::Vector3{-half_size, -half_size, -half_size});
+        cube.emplace_back(offset + math::Vector3{-half_size, -half_size, -half_size});
+        cube.emplace_back(offset + math::Vector3{half_size, half_size, -half_size});
+        cube.emplace_back(offset + math::Vector3{half_size, -half_size, -half_size});
+        // Back face
+        cube.emplace_back(offset + math::Vector3{-half_size, half_size, half_size});
+        cube.emplace_back(offset + math::Vector3{-half_size, -half_size, half_size});
+        cube.emplace_back(offset + math::Vector3{half_size, half_size, half_size});
+        cube.emplace_back(offset + math::Vector3{-half_size, -half_size, half_size});
+        cube.emplace_back(offset + math::Vector3{half_size, -half_size, half_size});
+        cube.emplace_back(offset + math::Vector3{half_size, half_size, half_size});
         // Generate shaft
         for(i64 i = 0; i < vert_count; ++i) {
             math::Vector3& v1 = circle[i];
