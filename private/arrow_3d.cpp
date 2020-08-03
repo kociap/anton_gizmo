@@ -44,10 +44,9 @@ namespace anton::gizmo {
 
     [[nodiscard]] static Array<math::Vector3> generate_cube_geometry(Arrow_3D const& arrow, i32 const vert_count) {
         Array<math::Vector3> circle = generate_circle(math::Vector3{0.0f}, math::Vector3{0.0f, 0.0f, -1.0f}, 1.0f, vert_count);
-        f32 const shaft_length = math::clamp(arrow.shaft_length, 0.0f, 1.0f);
-        f32 const cap_size = arrow.cap_size;
+        f32 const shaft_length = arrow.shaft_length;
         f32 const shaft_diameter = arrow.shaft_diameter;
-        f32 const half_size = cap_size / 2.0f;
+        f32 const half_size = 0.5f * arrow.cap_size;
         math::Vector3 const offset = {0, 0, -shaft_length + half_size};
         Array<math::Vector3> cube{reserve, (i64)vert_count * (3 + 3 + 6 + 3)};
         // Generate cube

@@ -1,5 +1,6 @@
 #include <anton/gizmo/dial_3d.hpp>
 
+#include <anton/math/math.hpp>
 #include <anton/math/matrix4.hpp>
 #include <anton/math/quaternion.hpp>
 #include <anton/math/vector2.hpp>
@@ -42,6 +43,21 @@ namespace anton::gizmo {
     }
 
     Optional<f32> intersect_dial_3d(Ray const ray, Dial_3D const& dial, math::Matrix4 const& world_transform) {
-        return null_optional;
+        math::Vector3 const v1{world_transform * math::Vector4{0.0f, 0.0f, -0.5f * dial.minor_diameter, 1.0f}};
+        math::Vector3 const v2{world_transform * math::Vector4{0.0f, 0.0f, 0.5f * dial.minor_diameter, 1.0f}};
+        f32 const r_large = 0.5f * (dial.major_diameter + dial.minor_diameter);
+        f32 const r_small = 0.5f * (dial.major_diameter - dial.minor_diameter);
+        Optional<f32> result = null_optional;
+        if(Optional<Raycast_Hit> res = intersect_ray_cylinder(ray, v1, v2, r_large)) {
+            result = res->distance;
+        }
+
+        if(!math::is_almost_zero(r_small, 0.001f)) {
+            if(Optional<Raycast_Hit> res = intersect_ray_cylinder(ray, v1, v2, r_small); res && (result && res->distance < *result)) {
+                result = null_optional;
+            }
+        }
+
+        return result;
     }
 } // namespace anton::gizmo
