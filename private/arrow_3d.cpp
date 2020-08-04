@@ -166,7 +166,7 @@ namespace anton::gizmo {
                 cube_bounding_vol.local_y = math::Vector3(world_transform * math::Vector4(0.0f, 1.0f, 0.0f, 0.0f));
                 cube_bounding_vol.local_z = math::Vector3(world_transform * math::Vector4(0.0f, 0.0f, -1.0f, 0.0f));
                 cube_bounding_vol.halfwidths = math::Vector3{0.5f * arrow.cap_size};
-                cube_bounding_vol.center = math::Vector3(world_transform * math::Vector4(0.0f, 0.0f, (-arrow.shaft_length + 0.5f * arrow.cap_size)));
+                cube_bounding_vol.center = math::Vector3(world_transform * math::Vector4{0.0f, 0.0f, (-arrow.shaft_length + 0.5f * arrow.cap_size), 1.0f});
                 if(Optional<Raycast_Hit> const hit = intersect_ray_obb(ray, cube_bounding_vol); hit.holds_value() && (!result || hit->distance < *result)) {
                     result = hit->distance;
                 }
