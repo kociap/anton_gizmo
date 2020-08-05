@@ -1,6 +1,7 @@
 #pragma once
 
 #include <anton/gizmo/common.hpp>
+#include <anton/math/quaternion.hpp>
 
 namespace anton::gizmo {
     // translate_along_line
@@ -51,4 +52,9 @@ namespace anton::gizmo {
     //
     [[nodiscard]] math::Vector3 scale_uniform_along_plane(Ray ray, math::Vector3 plane_normal, math::Vector3 origin, Ray initial_ray,
                                                           math::Vector3 initial_scale);
+
+    [[nodiscard]] math::Quaternion orient_turn(Ray ray, math::Vector3 axis, math::Vector3 origin, Ray initial_ray, math::Quaternion initial_orientation);
+
+    [[nodiscard]] math::Quaternion orient_trackball(Ray ray, math::Vector3 plane_normal, math::Vector3 origin, Ray initial_ray,
+                                                    math::Quaternion initial_orientation);
 } // namespace anton::gizmo
