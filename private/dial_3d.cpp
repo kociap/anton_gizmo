@@ -53,8 +53,12 @@ namespace anton::gizmo {
         }
 
         if(!math::is_almost_zero(r_small, 0.001f)) {
-            if(Optional<Raycast_Hit> res = intersect_ray_cylinder(ray, v1, v2, r_small); res && (result && res->distance < *result)) {
+            if(Optional<Raycast_Hit> res = intersect_ray_cylinder(ray, v1, v2, r_small); res && (result && res->distance <= *result)) {
                 result = null_optional;
+            }
+
+            if(Optional<Raycast_Hit> res = intersect_ray_cylinder_uncapped(ray, v1, v2, r_small); res && (!result || res->distance < *result)) {
+                result = res->distance;
             }
         }
 

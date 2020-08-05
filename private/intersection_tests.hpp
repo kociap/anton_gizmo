@@ -186,27 +186,68 @@ namespace anton::gizmo {
 
         // Cap 1
         {
-            f32 const angle_cos = dot(ray.direction, cylinder_normal);
-            f32 const coeff = (-dot(ray.origin, cylinder_normal)) / angle_cos;
-            math::Vector3 const hit_point = ray_origin + ray.direction * coeff;
-            if(math::abs(angle_cos) > math::epsilon && coeff >= 0.0f && (!result || coeff < result->distance) && length_squared(hit_point) <= radius_squared) {
-                Raycast_Hit hit;
-                hit.distance = coeff;
-                hit.hit_point = hit_point + vertex1;
-                result = hit;
+            f32 const plane_distance = math::dot(vertex1, cylinder_normal);
+            auto res = intersect_ray_plane(ray, cylinder_normal, plane_distance);
+            if(res && length_squared(res->hit_point - vertex1) <= radius_squared && (!result || res->distance < result->distance)) {
+                result = res;
             }
         }
 
         // Cap 2
         {
-            f32 const angle_cos = dot(ray.direction, -cylinder_normal);
-            f32 const coeff = (cap2_plane_dist - dot(ray.origin, -cylinder_normal)) / angle_cos;
-            math::Vector3 const hit_point = ray_origin + ray.direction * coeff;
-            if(math::abs(angle_cos) > math::epsilon && coeff >= 0.0f && (!result || coeff < result->distance) &&
-               length_squared(hit_point - vert2) <= radius_squared) {
+            f32 const plane_distance = math::dot(vertex2, cylinder_normal);
+            auto res = intersect_ray_plane(ray, cylinder_normal, plane_distance);
+            if(res && length_squared(res->hit_point - vertex2) <= radius_squared && (!result || res->distance < result->distance)) {
+                result = res;
+            }
+        }
+
+        return result;
+    }
+
+    inline Optional<Raycast_Hit> intersect_ray_cylinder_uncapped(Ray const ray, math::Vector3 const vertex1, math::Vector3 const vertex2, f32 const radius) {
+        Optional<Raycast_Hit> result = null_optional;
+
+        f32 const radius_squared = radius * radius;
+        math::Vector3 const ray_origin = ray.origin - vertex1;
+        math::Vector3 const vert2 = vertex2 - vertex1;
+        math::Vector3 const cylinder_normal = normalize(vert2);
+        f32 const ray_dir_prim_len = dot(ray.direction, cylinder_normal);
+        f32 const a = length_squared(ray.direction) - ray_dir_prim_len * ray_dir_prim_len;
+        f32 const ray_origin_prim_len = dot(ray_origin, cylinder_normal);
+        f32 const b = 2.0f * dot(ray_origin, ray.direction) - 2.0f * ray_origin_prim_len * ray_dir_prim_len;
+        f32 const c = length_squared(ray_origin) - ray_origin_prim_len * ray_origin_prim_len - radius_squared;
+        f32 const cap2_plane_dist = dot(vert2, -cylinder_normal);
+        if(a > math::epsilon || a < -math::epsilon) {
+            f32 const delta = b * b - 4 * a * c;
+            if(delta >= 0.0f) {
+                f32 const delta_sqrt = math::sqrt(delta);
+                f32 const t1 = 0.5f * (-b - delta_sqrt) / a;
+                math::Vector3 const t1v = ray_origin + ray.direction * t1;
+                if(t1 >= 0.0f && dot(t1v, cylinder_normal) >= 0 && dot(t1v, -cylinder_normal) >= cap2_plane_dist) {
+                    Raycast_Hit hit;
+                    hit.distance = t1;
+                    hit.hit_point = t1v + vertex1;
+                    result = hit;
+                }
+
+                f32 const t2 = 0.5f * (-b + delta_sqrt) / a;
+                math::Vector3 const t2v = ray_origin + ray.direction * t2;
+                if(t2 >= 0.0f && (!result || t2 < t1) && dot(t2v, cylinder_normal) >= 0 && dot(t2v, -cylinder_normal) >= cap2_plane_dist) {
+                    Raycast_Hit hit;
+                    hit.distance = t2;
+                    hit.hit_point = t2v + vertex1;
+                    result = hit;
+                }
+            }
+        } else {
+            // Ray is parallel to the cylinder
+            if(length_squared(ray_origin - ray_origin_prim_len * cylinder_normal) == radius_squared && dot(ray_origin, cylinder_normal) >= 0 &&
+               dot(ray_origin, -cylinder_normal) >= cap2_plane_dist) {
+                // Ray origin lies on the cylinder boundary
                 Raycast_Hit hit;
-                hit.distance = coeff;
-                hit.hit_point = hit_point + vertex1;
+                hit.distance = 0.0f;
+                hit.hit_point = ray.origin;
                 result = hit;
             }
         }
