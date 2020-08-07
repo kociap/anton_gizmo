@@ -3,7 +3,7 @@
 #include <intersection_tests.hpp>
 
 namespace anton::gizmo {
-    math::Vector3 translate_along_line(Ray const ray, math::Vector3 const axis, math::Vector3 const origin, Ray const initial_ray) {
+    math::Vector3 translate_along_line(math::Ray const ray, math::Vector3 const axis, math::Vector3 const origin, math::Ray const initial_ray) {
         math::Vector3 const point_on_axis = origin + axis * math::dot(ray.origin - origin, axis);
         math::Vector3 const plane_normal = math::normalize(ray.origin - point_on_axis);
         f32 const plane_distance = math::dot(origin, plane_normal);
@@ -20,7 +20,7 @@ namespace anton::gizmo {
         }
     }
 
-    math::Vector3 translate_along_plane(Ray const ray, math::Vector3 const plane_normal, math::Vector3 const origin, Ray const initial_ray) {
+    math::Vector3 translate_along_plane(math::Ray const ray, math::Vector3 const plane_normal, math::Vector3 const origin, math::Ray const initial_ray) {
         f32 const plane_distance = math::dot(origin, plane_normal);
         // Calculate cursor offset that we'll use to prevent the center of the object from snapping to the cursor
         math::Vector3 offset;
@@ -35,7 +35,7 @@ namespace anton::gizmo {
         }
     }
 
-    math::Vector3 scale_along_line(Ray const ray, math::Vector3 const axis, math::Vector3 const origin, Ray const initial_ray,
+    math::Vector3 scale_along_line(math::Ray const ray, math::Vector3 const axis, math::Vector3 const origin, math::Ray const initial_ray,
                                    math::Vector3 const initial_scale) {
         math::Vector3 const point_on_axis = origin + axis * math::dot(ray.origin - origin, axis);
         math::Vector3 const plane_normal = math::normalize(ray.origin - point_on_axis);
@@ -53,7 +53,7 @@ namespace anton::gizmo {
         }
     }
 
-    math::Vector3 scale_along_plane(Ray const ray, math::Vector3 const plane_normal, math::Vector3 const origin, Ray const initial_ray,
+    math::Vector3 scale_along_plane(math::Ray const ray, math::Vector3 const plane_normal, math::Vector3 const origin, math::Ray const initial_ray,
                                     math::Vector3 const initial_scale) {
         f32 const plane_distance = math::dot(origin, plane_normal);
         // Calculate cursor offset that we'll use to prevent the center of the object from snapping to the cursor
@@ -69,7 +69,7 @@ namespace anton::gizmo {
         }
     }
 
-    math::Vector3 scale_uniform_along_line(Ray const ray, math::Vector3 const axis, math::Vector3 const origin, Ray const initial_ray,
+    math::Vector3 scale_uniform_along_line(math::Ray const ray, math::Vector3 const axis, math::Vector3 const origin, math::Ray const initial_ray,
                                            math::Vector3 const initial_scale) {
         math::Vector3 const point_on_axis = origin + axis * math::dot(ray.origin - origin, axis);
         math::Vector3 const plane_normal = math::normalize(ray.origin - point_on_axis);
@@ -87,7 +87,7 @@ namespace anton::gizmo {
         }
     }
 
-    math::Vector3 scale_uniform_along_plane(Ray const ray, math::Vector3 const plane_normal, math::Vector3 const origin, Ray const initial_ray,
+    math::Vector3 scale_uniform_along_plane(math::Ray const ray, math::Vector3 const plane_normal, math::Vector3 const origin, math::Ray const initial_ray,
                                             math::Vector3 const initial_scale) {
         f32 const plane_distance = math::dot(origin, plane_normal);
         // Calculate cursor offset that we'll use to prevent the center of the object from snapping to the cursor
@@ -103,7 +103,7 @@ namespace anton::gizmo {
         }
     }
 
-    math::Quaternion orient_turn(Ray const ray, math::Vector3 const axis, math::Vector3 const origin, Ray const initial_ray,
+    math::Quaternion orient_turn(math::Ray const ray, math::Vector3 const axis, math::Vector3 const origin, math::Ray const initial_ray,
                                  math::Quaternion const initial_orientation) {
         math::Vector3 const plane_normal = math::normalize(ray.origin - origin);
         f32 const plane_distance = math::dot(origin, plane_normal);
@@ -130,7 +130,7 @@ namespace anton::gizmo {
         }
     }
 
-    math::Quaternion orient_trackball(Ray const ray, math::Vector3 const plane_normal, math::Vector3 const origin, Ray const initial_ray,
+    math::Quaternion orient_trackball(math::Ray const ray, math::Vector3 const plane_normal, math::Vector3 const origin, math::Ray const initial_ray,
                                       math::Quaternion const initial_orientation) {
         return initial_orientation;
     }

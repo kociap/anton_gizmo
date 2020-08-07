@@ -37,5 +37,5 @@ namespace anton::gizmo {
     // intersect_arrow_3d
     // Tests the arrow for intersection and returns the distance to the intersection point along the ray if the ray intersects the bounding volumes.
     //
-    [[nodiscard]] Optional<f32> intersect_arrow_3d(Ray ray, Arrow_3D const& arrow, math::Matrix4 const& world_transform);
+    [[nodiscard]] Optional<f32> intersect_arrow_3d(math::Ray ray, Arrow_3D const& arrow, math::Matrix4 const& world_transform);
 } // namespace anton::gizmo

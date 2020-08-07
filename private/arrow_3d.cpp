@@ -127,7 +127,7 @@ namespace anton::gizmo {
         }
     }
 
-    Optional<f32> intersect_arrow_3d(Ray const ray, Arrow_3D const& arrow, math::Matrix4 const& world_transform) {
+    Optional<f32> intersect_arrow_3d(math::Ray const ray, Arrow_3D const& arrow, math::Matrix4 const& world_transform) {
         switch(arrow.draw_style) {
             case Arrow_3D_Style::cone: {
                 Optional<f32> result = null_optional;
@@ -161,7 +161,7 @@ namespace anton::gizmo {
                     result = hit->distance;
                 }
 
-                OBB cube_bounding_vol;
+                math::OBB cube_bounding_vol;
                 cube_bounding_vol.local_x = math::Vector3(world_transform * math::Vector4(1.0f, 0.0f, 0.0f, 0.0f));
                 cube_bounding_vol.local_y = math::Vector3(world_transform * math::Vector4(0.0f, 1.0f, 0.0f, 0.0f));
                 cube_bounding_vol.local_z = math::Vector3(world_transform * math::Vector4(0.0f, 0.0f, -1.0f, 0.0f));

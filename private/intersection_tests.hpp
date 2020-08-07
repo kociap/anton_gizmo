@@ -1,5 +1,4 @@
-#ifndef ANTON_INTERSECTION_TESTS_HPP_INCLUDE
-#define ANTON_INTERSECTION_TESTS_HPP_INCLUDE
+#pragma once
 
 #include <anton/gizmo/common.hpp>
 #include <anton/math/transform.hpp>
@@ -15,16 +14,7 @@ namespace anton::gizmo {
         f32 distance = 0;
     };
 
-    class OBB {
-    public:
-        math::Vector3 center;
-        math::Vector3 local_x;
-        math::Vector3 local_y;
-        math::Vector3 local_z;
-        math::Vector3 halfwidths;
-    };
-
-    inline Optional<Raycast_Hit> intersect_ray_plane(Ray const ray, math::Vector3 const plane_normal, f32 const plane_distance) {
+    inline Optional<Raycast_Hit> intersect_ray_plane(math::Ray const ray, math::Vector3 const plane_normal, f32 const plane_distance) {
         f32 const angle_cos = dot(ray.direction, plane_normal);
         f32 const coeff = (plane_distance - dot(ray.origin, plane_normal)) / angle_cos;
         if(math::abs(angle_cos) > math::epsilon && coeff >= 0.0f) {
@@ -38,7 +28,7 @@ namespace anton::gizmo {
     }
 
     // direction is the vector which defines where the cone is expanding
-    inline Optional<Raycast_Hit> intersect_ray_cone(Ray const ray, math::Vector3 const vertex, math::Vector3 const direction, f32 const angle_cos,
+    inline Optional<Raycast_Hit> intersect_ray_cone(math::Ray const ray, math::Vector3 const vertex, math::Vector3 const direction, f32 const angle_cos,
                                                     f32 const height) {
         Optional<Raycast_Hit> result = null_optional;
 
@@ -110,7 +100,7 @@ namespace anton::gizmo {
         return result;
     }
 
-    inline Optional<Raycast_Hit> intersect_ray_obb(Ray ray, OBB obb) {
+    inline Optional<Raycast_Hit> intersect_ray_obb(math::Ray ray, math::OBB obb) {
         math::Matrix4 rotation =
             math::Matrix4(math::Vector4{obb.local_x, 0}, math::Vector4{obb.local_y, 0}, math::Vector4{obb.local_z, 0}, math::Vector4{0, 0, 0, 1});
         // Center OBB at 0
@@ -137,7 +127,7 @@ namespace anton::gizmo {
         }
     }
 
-    inline Optional<Raycast_Hit> intersect_ray_cylinder(Ray const ray, math::Vector3 const vertex1, math::Vector3 const vertex2, f32 const radius) {
+    inline Optional<Raycast_Hit> intersect_ray_cylinder(math::Ray const ray, math::Vector3 const vertex1, math::Vector3 const vertex2, f32 const radius) {
         Optional<Raycast_Hit> result = null_optional;
 
         f32 const radius_squared = radius * radius;
@@ -205,7 +195,8 @@ namespace anton::gizmo {
         return result;
     }
 
-    inline Optional<Raycast_Hit> intersect_ray_cylinder_uncapped(Ray const ray, math::Vector3 const vertex1, math::Vector3 const vertex2, f32 const radius) {
+    inline Optional<Raycast_Hit> intersect_ray_cylinder_uncapped(math::Ray const ray, math::Vector3 const vertex1, math::Vector3 const vertex2,
+                                                                 f32 const radius) {
         Optional<Raycast_Hit> result = null_optional;
 
         f32 const radius_squared = radius * radius;
@@ -255,5 +246,3 @@ namespace anton::gizmo {
         return result;
     }
 } // namespace anton::gizmo
-
-#endif // !ANTON_INTERSECTION_TESTS_HPP_INCLUDE

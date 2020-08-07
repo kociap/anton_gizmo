@@ -42,7 +42,7 @@ namespace anton::gizmo {
         return vertices;
     }
 
-    Optional<f32> intersect_dial_3d(Ray const ray, Dial_3D const& dial, math::Matrix4 const& world_transform) {
+    Optional<f32> intersect_dial_3d(math::Ray const ray, Dial_3D const& dial, math::Matrix4 const& world_transform) {
         math::Vector3 const v1{world_transform * math::Vector4{0.0f, 0.0f, -0.5f * dial.minor_diameter, 1.0f}};
         math::Vector3 const v2{world_transform * math::Vector4{0.0f, 0.0f, 0.5f * dial.minor_diameter, 1.0f}};
         f32 const r_large = 0.5f * (dial.major_diameter + dial.minor_diameter);
