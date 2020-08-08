@@ -40,13 +40,15 @@ target_sources(anton_gizmo
     "${CMAKE_CURRENT_SOURCE_DIR}/public/anton/gizmo/dial_3d.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/public/anton/gizmo/gizmo.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/public/anton/gizmo/manipulate.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/public/anton/gizmo/shapes.hpp"
     
     PRIVATE 
     "${CMAKE_CURRENT_SOURCE_DIR}/private/arrow_3d.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/private/dial_3d.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/private/intersection_tests.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/private/utils.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/private/manipulate.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/private/shapes.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/private/utils.hpp"
 )
 target_include_directories(anton_gizmo
     PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/public"
