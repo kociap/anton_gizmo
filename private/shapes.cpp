@@ -3,6 +3,55 @@
 #include <anton/math/math.hpp>
 
 namespace anton::gizmo {
+    Array<math::Vec3> generate_cube(f32 const edge_length) {
+        f32 const half_size = 0.5f * edge_length;
+        Array<math::Vec3> cube{reserve, 36};
+        // Generate cube
+        // Top face
+        cube.emplace_back(math::Vec3{-half_size, half_size, half_size});
+        cube.emplace_back(math::Vec3{half_size, half_size, half_size});
+        cube.emplace_back(math::Vec3{-half_size, half_size, -half_size});
+        cube.emplace_back(math::Vec3{-half_size, half_size, -half_size});
+        cube.emplace_back(math::Vec3{half_size, half_size, half_size});
+        cube.emplace_back(math::Vec3{half_size, half_size, -half_size});
+        // Bottom face
+        cube.emplace_back(math::Vec3{-half_size, -half_size, half_size});
+        cube.emplace_back(math::Vec3{-half_size, -half_size, -half_size});
+        cube.emplace_back(math::Vec3{half_size, -half_size, half_size});
+        cube.emplace_back(math::Vec3{-half_size, -half_size, -half_size});
+        cube.emplace_back(math::Vec3{half_size, -half_size, -half_size});
+        cube.emplace_back(math::Vec3{half_size, -half_size, half_size});
+        // Right face
+        cube.emplace_back(math::Vec3{half_size, half_size, half_size});
+        cube.emplace_back(math::Vec3{half_size, -half_size, half_size});
+        cube.emplace_back(math::Vec3{half_size, -half_size, -half_size});
+        cube.emplace_back(math::Vec3{half_size, half_size, half_size});
+        cube.emplace_back(math::Vec3{half_size, -half_size, -half_size});
+        cube.emplace_back(math::Vec3{half_size, half_size, -half_size});
+        // Left face
+        cube.emplace_back(math::Vec3{-half_size, half_size, half_size});
+        cube.emplace_back(math::Vec3{-half_size, -half_size, -half_size});
+        cube.emplace_back(math::Vec3{-half_size, -half_size, half_size});
+        cube.emplace_back(math::Vec3{-half_size, half_size, half_size});
+        cube.emplace_back(math::Vec3{-half_size, half_size, -half_size});
+        cube.emplace_back(math::Vec3{-half_size, -half_size, -half_size});
+        // Front face
+        cube.emplace_back(math::Vec3{-half_size, half_size, -half_size});
+        cube.emplace_back(math::Vec3{half_size, half_size, -half_size});
+        cube.emplace_back(math::Vec3{-half_size, -half_size, -half_size});
+        cube.emplace_back(math::Vec3{-half_size, -half_size, -half_size});
+        cube.emplace_back(math::Vec3{half_size, half_size, -half_size});
+        cube.emplace_back(math::Vec3{half_size, -half_size, -half_size});
+        // Back face
+        cube.emplace_back(math::Vec3{-half_size, half_size, half_size});
+        cube.emplace_back(math::Vec3{-half_size, -half_size, half_size});
+        cube.emplace_back(math::Vec3{half_size, half_size, half_size});
+        cube.emplace_back(math::Vec3{-half_size, -half_size, half_size});
+        cube.emplace_back(math::Vec3{half_size, -half_size, half_size});
+        cube.emplace_back(math::Vec3{half_size, half_size, half_size});
+        return cube;
+    }
+
     Array<math::Vec3> generate_icosphere(f32 const radius, i64 const subdivision_level) {
         f32 const vert_inv_len = radius * math::inv_sqrt(1.0f + math::golden_ratio * math::golden_ratio);
 
