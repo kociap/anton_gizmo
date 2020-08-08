@@ -1,6 +1,3 @@
-#pragma once
-
-#include <anton/array.hpp>
 #include <anton/math/math.hpp>
 
 namespace anton::gizmo {
