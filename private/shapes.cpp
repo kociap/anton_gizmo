@@ -1,3 +1,5 @@
+#include <anton/gizmo/shapes.hpp>
+
 #include <anton/math/math.hpp>
 
 namespace anton::gizmo {
@@ -111,7 +113,7 @@ namespace anton::gizmo {
 
         // Subdivision
         for(i64 s = 0; s < subdivision_level; ++s) {
-            Array<Vec3> subdivided{reserve, 4 * vertices.size()};
+            Array<math::Vec3> subdivided{reserve, 4 * vertices.size()};
             for(i64 i = 0; i < vertices.size(); i += 3) {
                 math::Vec3& v1 = vertices[i];
                 math::Vec3& v2 = vertices[i + 1];
