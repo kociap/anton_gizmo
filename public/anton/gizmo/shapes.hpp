@@ -1,7 +1,7 @@
 #pragma once
 
 #include <anton/array.hpp>
-#include <anton/math/vector3.hpp>
+#include <anton/math/vec3.hpp>
 #include <anton/types.hpp>
 
 namespace anton::gizmo {
