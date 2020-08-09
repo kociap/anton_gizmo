@@ -115,15 +115,9 @@ namespace anton::gizmo {
 
         math::Vec3 const offset = offset_res->hit_point;
         if(auto res = intersect_ray_plane(ray, plane_normal, plane_distance)) {
-            // We have to normalize those since we need the cos of the angle between them
             math::Vec3 const start = math::normalize(offset - origin);
             math::Vec3 const target = math::normalize(res->hit_point - origin);
-            f32 const angle_cos = math::dot(target, start);
-            f32 const angle = math::acos(angle_cos);
-            // Find the sign of the angle
-            math::Vec3 const side = math::cross(axis, start);
-            f32 const angle_sign = math::sign(math::dot(side, target));
-            math::Quat const orientation_delta = math::Quat::from_axis_angle(axis, angle_sign * angle);
+            math::Quat const orientation_delta = math::orient_towards(start, target);
             return orientation_delta * initial_orientation;
         } else {
             return initial_orientation;
@@ -132,6 +126,21 @@ namespace anton::gizmo {
 
     math::Quat orient_trackball(math::Ray const ray, math::Vec3 const plane_normal, math::Vec3 const origin, math::Ray const initial_ray,
                                 math::Quat const initial_orientation) {
-        return initial_orientation;
+        f32 const plane_distance = math::dot(origin, plane_normal);
+        auto offset_res = intersect_ray_plane(initial_ray, plane_normal, plane_distance);
+        if(!offset_res) {
+            return initial_orientation;
+        }
+
+        if(auto res = intersect_ray_plane(ray, plane_normal, plane_distance)) {
+            math::Vec3 const delta = res->hit_point - offset_res->hit_point;
+            f32 const delta_len = math::length(delta);
+            math::Vec3 const delta_norm = delta / delta_len;
+            math::Vec3 const axis = math::cross(plane_normal, delta_norm);
+            math::Quat const orientation_delta = math::Quat::from_axis_angle(axis, delta_len);
+            return orientation_delta * initial_orientation;
+        } else {
+            return initial_orientation;
+        }
     }
 } // namespace anton::gizmo
