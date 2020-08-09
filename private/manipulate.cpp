@@ -135,6 +135,10 @@ namespace anton::gizmo {
         if(auto res = intersect_ray_plane(ray, plane_normal, plane_distance)) {
             math::Vec3 const delta = res->hit_point - offset_res->hit_point;
             f32 const delta_len = math::length(delta);
+            if(math::is_almost_zero(delta_len, 0.0001f)) {
+                return initial_orientation;
+            }
+            
             math::Vec3 const delta_norm = delta / delta_len;
             math::Vec3 const axis = math::cross(plane_normal, delta_norm);
             math::Quat const orientation_delta = math::Quat::from_axis_angle(axis, delta_len);
