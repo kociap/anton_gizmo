@@ -141,9 +141,10 @@ namespace anton::gizmo {
 
                 math::Vec3 const vertex = math::Vec3(world_transform * math::Vec4(0.0f, 0.0f, -arrow.shaft_length - arrow.cap_length, 1.0f));
                 math::Vec3 const direction = math::Vec3(world_transform * math::Vec4(0.0f, 0.0f, 1.0f, 0.0f));
-                f32 const angle_cos = arrow.cap_length * math::inv_sqrt(arrow.cap_length * arrow.cap_length + arrow.cap_size * arrow.cap_size);
-                f32 const height = arrow.cap_length;
-                if(Optional<Raycast_Hit> const hit = intersect_ray_cone(ray, vertex, direction, angle_cos, height);
+                f32 const cone_height = arrow.cap_length;
+                f32 const cone_radius = 0.5f * arrow.cap_size;
+                f32 const angle_cos = cone_height * math::inv_sqrt(cone_height * cone_height + cone_radius * cone_radius);
+                if(Optional<Raycast_Hit> const hit = intersect_ray_cone(ray, vertex, direction, angle_cos, cone_height);
                    hit.holds_value() && (!result || hit->distance < *result)) {
                     result = hit->distance;
                 }

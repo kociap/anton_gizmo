@@ -31,15 +31,12 @@ namespace anton::gizmo {
     inline Optional<Raycast_Hit> intersect_ray_cone(math::Ray const ray, math::Vec3 const vertex, math::Vec3 const direction, f32 const angle_cos,
                                                     f32 const height) {
         Optional<Raycast_Hit> result = null_optional;
-
+        // We use the equation '<|P|, direction> = angle_cos' where 'P = t * ray.direction + ray.origin - vertex' and solve for t.
         math::Vec3 const ray_origin = ray.origin - vertex;
-        f32 const angle_cos_square = angle_cos * angle_cos;
-        math::Vec3 const ray_dir_prim = dot(ray.direction, direction) * direction;
-        f32 const a = angle_cos_square * length_squared(ray.direction - ray_dir_prim) - length_squared(ray_dir_prim);
-        f32 const ray_origin_prim_len = dot(ray_origin, direction);
-        math::Vec3 const ray_origin_prim = ray_origin_prim_len * direction;
-        f32 const b = 2.0f * angle_cos_square * dot(ray_origin - ray_origin_prim, ray.direction - ray_dir_prim) - 2.0f * dot(ray_origin_prim, ray_dir_prim);
-        f32 const c = angle_cos_square * length_squared(ray_origin - ray_origin_prim) - length_squared(ray_origin_prim);
+        f32 const cos_squared = angle_cos * angle_cos;
+        f32 const a = math::dot(ray.direction, direction) * math::dot(ray.direction, direction) - cos_squared;
+        f32 const b = 2.0f * math::dot(ray.direction, direction) * math::dot(ray_origin, direction) - 2.0f * cos_squared * math::dot(ray.direction, ray_origin);
+        f32 const c = math::dot(ray_origin, direction) * math::dot(ray_origin, direction) - cos_squared * math::dot(ray_origin, ray_origin);
         if(a > math::epsilon || a < -math::epsilon) {
             f32 const delta = b * b - 4.0f * a * c;
             if(delta >= 0.0f) {
@@ -65,7 +62,7 @@ namespace anton::gizmo {
             }
         } else {
             // Ray is parallel to the cone boundary
-            if(b > math::epsilon || b < math::epsilon) {
+            if(b > math::epsilon || b < -math::epsilon) {
                 f32 const t = -c / b;
                 f32 const point_height = dot(ray_origin + ray.direction * t, direction);
                 if(t >= 0 && point_height <= height && point_height >= 0.0f) {
@@ -76,7 +73,8 @@ namespace anton::gizmo {
                 }
             } else {
                 // Ray is on the boundary of the infinite cone
-                if(ray_origin_prim_len <= height && ray_origin_prim_len >= 0.0f) {
+                f32 const o = math::dot(ray_origin, direction);
+                if(o <= height && o >= 0.0f) {
                     // Origin lies on the cone's coundary
                     Raycast_Hit hit;
                     hit.distance = 0.0f;
@@ -91,39 +89,13 @@ namespace anton::gizmo {
             }
         }
 
-        if(Optional<Raycast_Hit> const hit = intersect_ray_plane({ray_origin, ray.direction}, direction, height);
-           hit.holds_value() && (!result || hit->distance < result->distance) &&
-           (length_squared(hit->hit_point - dot(hit->hit_point, direction) * direction) * angle_cos_square <= height * height)) {
-            result = hit;
-        }
+        // if(Optional<Raycast_Hit> const hit = intersect_ray_plane({ray_origin, ray.direction}, direction, height);
+        //    hit.holds_value() && (!result || hit->distance < result->distance) &&
+        //    (length_squared(hit->hit_point - dot(hit->hit_point, direction) * direction) * angle_cos_square <= height * height)) {
+        //     result = hit;
+        // }
 
         return result;
-    }
-
-    inline Optional<Raycast_Hit> intersect_ray_obb(math::Ray ray, math::OBB obb) {
-        math::Mat4 rotation = math::Mat4(math::Vec4{obb.local_x, 0}, math::Vec4{obb.local_y, 0}, math::Vec4{obb.local_z, 0}, math::Vec4{0, 0, 0, 1});
-        // Center OBB at 0
-        math::Mat4 obb_space = rotation * math::translate(-obb.center);
-        math::Vec4 ray_dir = rotation * math::Vec4(ray.direction, 0);
-        math::Vec4 ray_origin = obb_space * math::Vec4(ray.origin, 1);
-        // AABB slab test
-        f32 tmin = -math::infinity;
-        f32 tmax = math::infinity;
-        for(int i = 0; i < 3; ++i) {
-            f32 tx1 = (obb.halfwidths[i] - ray_origin[i]) / ray_dir[i];
-            f32 tx2 = (-obb.halfwidths[i] - ray_origin[i]) / ray_dir[i];
-            tmax = math::min(tmax, math::max(tx1, tx2));
-            tmin = math::max(tmin, math::min(tx1, tx2));
-        }
-
-        if(tmax >= 0 && tmax >= tmin) {
-            Raycast_Hit out;
-            out.distance = tmax;
-            out.hit_point = ray.origin + ray.direction * tmax;
-            return out;
-        } else {
-            return null_optional;
-        }
     }
 
     inline Optional<Raycast_Hit> intersect_ray_cylinder(math::Ray const ray, math::Vec3 const vertex1, math::Vec3 const vertex2, f32 const radius) {
