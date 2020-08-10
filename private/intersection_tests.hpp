@@ -98,6 +98,32 @@ namespace anton::gizmo {
         return result;
     }
 
+    inline Optional<Raycast_Hit> intersect_ray_obb(math::Ray ray, math::OBB obb) {
+        math::Mat4 rotation = math::Mat4(math::Vec4{obb.local_x, 0}, math::Vec4{obb.local_y, 0}, math::Vec4{obb.local_z, 0}, math::Vec4{0, 0, 0, 1});
+        // Center OBB at 0
+        math::Mat4 obb_space = rotation * math::translate(-obb.center);
+        math::Vec4 ray_dir = rotation * math::Vec4(ray.direction, 0);
+        math::Vec4 ray_origin = obb_space * math::Vec4(ray.origin, 1);
+        // AABB slab test
+        f32 tmin = -math::infinity;
+        f32 tmax = math::infinity;
+        for(int i = 0; i < 3; ++i) {
+            f32 tx1 = (obb.halfwidths[i] - ray_origin[i]) / ray_dir[i];
+            f32 tx2 = (-obb.halfwidths[i] - ray_origin[i]) / ray_dir[i];
+            tmax = math::min(tmax, math::max(tx1, tx2));
+            tmin = math::max(tmin, math::min(tx1, tx2));
+        }
+
+        if(tmax >= 0 && tmax >= tmin) {
+            Raycast_Hit out;
+            out.distance = tmax;
+            out.hit_point = ray.origin + ray.direction * tmax;
+            return out;
+        } else {
+            return null_optional;
+        }
+    }
+
     inline Optional<Raycast_Hit> intersect_ray_cylinder(math::Ray const ray, math::Vec3 const vertex1, math::Vec3 const vertex2, f32 const radius) {
         Optional<Raycast_Hit> result = null_optional;
 
