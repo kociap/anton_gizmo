@@ -105,7 +105,7 @@ namespace anton::gizmo {
 
     math::Quat orient_turn(math::Ray const ray, math::Vec3 const axis, math::Vec3 const origin, math::Ray const initial_ray,
                            math::Quat const initial_orientation) {
-        math::Vec3 const plane_normal = math::normalize(ray.origin - origin);
+        math::Vec3 const plane_normal = math::normalize(axis);
         f32 const plane_distance = math::dot(origin, plane_normal);
         // Calculate cursor offset
         auto offset_res = intersect_ray_plane(initial_ray, plane_normal, plane_distance);
@@ -138,7 +138,7 @@ namespace anton::gizmo {
             if(math::is_almost_zero(delta_len, 0.0001f)) {
                 return initial_orientation;
             }
-            
+
             math::Vec3 const delta_norm = delta / delta_len;
             math::Vec3 const axis = math::cross(plane_normal, delta_norm);
             math::Quat const orientation_delta = math::Quat::from_axis_angle(axis, delta_len);
