@@ -41,7 +41,7 @@ namespace anton::gizmo {
         f32 const delta_sqrt = math::sqrt(delta);
         f32 const t1 = 0.5f * (-b - delta_sqrt);
         f32 const t2 = 0.5f * (-b + delta_sqrt);
-        if(t1 > t2 && t1 >= 0.0f) {
+        if(t1 < t2 && t1 >= 0.0f) {
             Raycast_Hit hit;
             hit.distance = t1;
             hit.hit_point = ray.origin + t1 * ray.direction;
