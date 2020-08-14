@@ -1,6 +1,7 @@
 #include <anton/gizmo/shapes.hpp>
 
 #include <anton/math/math.hpp>
+#include <intersection_tests.hpp>
 
 namespace anton::gizmo {
     Array<math::Vec3> generate_cube(f32 const edge_length) {
@@ -192,5 +193,28 @@ namespace anton::gizmo {
         }
 
         return vertices;
+    }
+
+    Optional<f32> intersect_cube(math::Ray const ray, f32 const edge_length, math::Mat4 const& world_transform) {
+        math::OBB cube_bounding_vol;
+        cube_bounding_vol.local_x = math::Vec3(world_transform * math::Vec4(1.0f, 0.0f, 0.0f, 0.0f));
+        cube_bounding_vol.local_y = math::Vec3(world_transform * math::Vec4(0.0f, 1.0f, 0.0f, 0.0f));
+        cube_bounding_vol.local_z = math::Vec3(world_transform * math::Vec4(0.0f, 0.0f, -1.0f, 0.0f));
+        cube_bounding_vol.halfwidths = math::Vec3{0.5f * edge_length};
+        cube_bounding_vol.center = math::Vec3(world_transform * math::Vec4{0.0f, 0.0f, 0.0f, 1.0f});
+        if(Optional<Raycast_Hit> const hit = intersect_ray_obb(ray, cube_bounding_vol)) {
+            return Optional<f32>{hit->distance};
+        } else {
+            return null_optional;
+        }
+    }
+
+    Optional<f32> intersect_sphere(math::Ray ray, f32 radius, math::Mat4 const& world_transform) {
+        math::Vec3 const origin{world_transform * math::Vec4{0.0f, 0.0f, 0.0f, 1.0f}};
+        if(Optional<Raycast_Hit> const hit = intersect_ray_sphere(ray, origin, radius)) {
+            return Optional<f32>{hit->distance};
+        } else {
+            return null_optional;
+        }
     }
 } // namespace anton::gizmo

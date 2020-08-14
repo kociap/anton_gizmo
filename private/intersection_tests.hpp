@@ -27,6 +27,34 @@ namespace anton::gizmo {
         }
     }
 
+    inline Optional<Raycast_Hit> intersect_ray_sphere(math::Ray const ray, math::Vec3 const origin, f32 const radius) {
+        math::Vec3 const ray_origin = ray.origin - origin;
+        // a = dot(ray.direction, ray.direction) which is always 1
+        f32 const b = 2.0f * math::dot(ray_origin, ray.direction);
+        f32 const c = math::dot(ray_origin, ray_origin) - radius * radius;
+        f32 const delta = b * b - 4.0f * c;
+        if(delta < 0.0f) {
+            return null_optional;
+        }
+
+        Optional<Raycast_Hit> result = null_optional;
+        f32 const delta_sqrt = math::sqrt(delta);
+        f32 const t1 = 0.5f * (-b - delta_sqrt);
+        f32 const t2 = 0.5f * (-b + delta_sqrt);
+        if(t1 > t2 && t1 >= 0.0f) {
+            Raycast_Hit hit;
+            hit.distance = t1;
+            hit.hit_point = ray.origin + t1 * ray.direction;
+            result = hit;
+        } else if(t2 < t1 && t2 >= 0.0f) {
+            Raycast_Hit hit;
+            hit.distance = t1;
+            hit.hit_point = ray.origin + t1 * ray.direction;
+            result = hit;
+        }
+        return result;
+    }
+
     // direction is the vector which defines where the cone is expanding
     inline Optional<Raycast_Hit> intersect_ray_cone(math::Ray const ray, math::Vec3 const vertex, math::Vec3 const direction, f32 const angle_cos,
                                                     f32 const height) {
