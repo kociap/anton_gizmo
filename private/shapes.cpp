@@ -2,8 +2,23 @@
 
 #include <anton/math/math.hpp>
 #include <intersection_tests.hpp>
+#include <utils.hpp>
 
 namespace anton::gizmo {
+    Array<math::Vec3> generate_filled_circle(f32 const radius, i32 const vertex_count) {
+        Array<math::Vec3> circle = generate_circle({0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, -1.0f}, radius * 2.0f, vertex_count);
+        Array<math::Vec3> result;
+        math::Vec3 const v1 = {0.0f, 0.0f, 0.0f};
+        for(i64 i = 0; i < vertex_count; ++i) {
+            math::Vec3 const& v2 = circle[i];
+            math::Vec3 const& v3 = circle[(i + 1) % vertex_count];
+            result.emplace_back(v1);
+            result.emplace_back(v2);
+            result.emplace_back(v3);
+        }
+        return result;
+    }
+
     Array<math::Vec3> generate_cube(f32 const edge_length) {
         f32 const half_size = 0.5f * edge_length;
         Array<math::Vec3> cube{reserve, 36};
@@ -169,9 +184,9 @@ namespace anton::gizmo {
                 math::Vec3& v2 = vertices[i + 1];
                 math::Vec3& v3 = vertices[i + 2];
 
-                math::Vec3 const a = math::normalize(v1 + v2);
-                math::Vec3 const b = math::normalize(v1 + v3);
-                math::Vec3 const c = math::normalize(v2 + v3);
+                math::Vec3 const a = radius * math::normalize(v1 + v2);
+                math::Vec3 const b = radius * math::normalize(v1 + v3);
+                math::Vec3 const c = radius * math::normalize(v2 + v3);
 
                 subdivided.emplace_back(v1);
                 subdivided.emplace_back(a);
