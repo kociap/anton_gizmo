@@ -17,7 +17,7 @@ namespace anton::gizmo {
             math::Vec3 const& v2 = major[(i + 1) % vertex_count_major];
             math::Vec3 const plane_normal = math::normalize(v1 - v2);
             Array<math::Vec3> ring = generate_circle(v2, plane_normal, dial.minor_diameter, vertex_count_minor);
-            torus_rings.emplace_back(move(ring));
+            torus_rings.emplace_back(ANTON_MOV(ring));
         }
 
         Array<math::Vec3> vertices;

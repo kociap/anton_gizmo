@@ -204,7 +204,7 @@ namespace anton::gizmo {
                 subdivided.emplace_back(c);
                 subdivided.emplace_back(b);
             }
-            vertices = move(subdivided);
+            vertices = ANTON_MOV(subdivided);
         }
 
         return vertices;
