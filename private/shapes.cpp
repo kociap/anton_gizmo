@@ -5,18 +5,34 @@
 #include <utils.hpp>
 
 namespace anton::gizmo {
-    Array<math::Vec3> generate_filled_circle(f32 const radius, i32 const vertex_count) {
-        Array<math::Vec3> circle = generate_circle({0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, -1.0f}, radius * 2.0f, vertex_count);
-        Array<math::Vec3> result;
-        math::Vec3 const v1 = {0.0f, 0.0f, 0.0f};
+    Array<math::Vec3> generate_filled_circle(math::Vec3 const& origin, math::Vec3 const& normal, f32 const radius, i32 const vertex_count) {
+        Array<math::Vec3> circle = generate_circle_new(origin, normal, radius, vertex_count);
+        Array<math::Vec3> result{reserve, 3 * vertex_count};
         for(i64 i = 0; i < vertex_count; ++i) {
             math::Vec3 const& v2 = circle[i];
             math::Vec3 const& v3 = circle[(i + 1) % vertex_count];
-            result.emplace_back(v1);
-            result.emplace_back(v2);
+            result.emplace_back(origin);
             result.emplace_back(v3);
+            result.emplace_back(v2);
         }
         return result;
+    }
+
+    Array<math::Vec3> generate_square(math::Vec3 const& origin, math::Vec3 const& normal, math::Vec3 const& u, f32 const edge_length) {
+        f32 const half_size = 0.5f * edge_length;
+        math::Vec3 const r = math::cross(u, normal);
+        math::Vec3 const v1{half_size * (u - r)};
+        math::Vec3 const v2{half_size * (-u - r)};
+        math::Vec3 const v3{half_size * (u + r)};
+        math::Vec3 const v4{half_size * (-u + r)};
+        Array<math::Vec3> square{reserve, 6};
+        square.emplace_back(v1);
+        square.emplace_back(v2);
+        square.emplace_back(v3);
+        square.emplace_back(v3);
+        square.emplace_back(v2);
+        square.emplace_back(v4);
+        return square;
     }
 
     Array<math::Vec3> generate_cube(f32 const edge_length) {
@@ -71,9 +87,11 @@ namespace anton::gizmo {
     Array<math::Vec3> generate_icosphere(f32 const radius, i64 const subdivision_level) {
         f32 const vert_inv_len = radius * math::inv_sqrt(1.0f + math::golden_ratio * math::golden_ratio);
 
-        // The first letter is the axis along which the shorter edge of the golden rectangle is
-        // The second letter is the axis along which the longer edge of the golden rectangle is
-        // Points are in CCW order from the top-left (when plane normal is facing us and the 2nd axis ia oriented upwards).
+        // The vertices of an icoshpere are formed by the corners of 3 orthogonal intersecting
+        // rectangles with edge lengths 1 and golden ratio.
+        // The first letter is the axis along which the shorter edge of the rectangle is.
+        // The second letter is the axis along which the longer edge of the rectangle is.
+        // Points are in CCW order from the top-left (when the plane normal is facing us and the 2nd axis is oriented upwards).
 
         math::Vec3 const xy_v1 = math::Vec3{-1.0f, math::golden_ratio, 0.0f} * vert_inv_len;
         math::Vec3 const xy_v2 = math::Vec3{-1.0f, -math::golden_ratio, 0.0f} * vert_inv_len;
