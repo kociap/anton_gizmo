@@ -247,7 +247,7 @@ namespace anton::gizmo {
         f32 const length_r = math::length(world_r);
         world_r /= length_r;
         f32 const d_r = math::abs(math::dot(p, world_r));
-        if(d_u <= length_u && d_r <= length_r) {
+        if(d_u <= 0.5f * length_u && d_r <= 0.5f * length_r) {
             return hit->distance;
         } else {
             return null_optional;
