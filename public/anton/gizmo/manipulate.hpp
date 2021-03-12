@@ -18,7 +18,7 @@ namespace anton::gizmo {
     // Returns:
     // The translated position
     //
-    [[nodiscard]] math::Vec3 translate_along_plane(math::Ray ray, math::Vec3 plane_normal, math::Vec3 origin, math::Ray initial_ray, math::Vec3 initial_scale);
+    [[nodiscard]] math::Vec3 translate_along_plane(math::Ray ray, math::Vec3 plane_normal, math::Vec3 origin, math::Ray initial_ray);
 
     // scale_along_line
     // origin - the original position of the object
