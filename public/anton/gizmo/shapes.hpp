@@ -6,32 +6,23 @@
 
 namespace anton::gizmo {
     // generate_filled_circle
-    // Generates a filled circle centered at origin and facing in the direction of the normal.
+    // Generates a filled circle of radius 1 centered at (0, 0, 0) with normal along -z.
     //
     // Parameters:
-    // origin       - the initial position of the circle.
-    // normal       - the normal of the circle. Must be normalized and non-zero.
-    // radius       - the radius of the circle.
     // vertex_count - the number of vertices that the circle will consist of.
     //
     // Returns:
-    // An array containing a triangle list.
+    // An array containing a triangle list in CCW order when looking at the circle in the direction of +z.
     //
-    [[nodiscard]] Array<math::Vec3> generate_filled_circle(math::Vec3 const& origin, math::Vec3 const& normal, f32 radius, i32 vertex_count);
+    [[nodiscard]] Array<math::Vec3> generate_filled_circle(i32 vertex_count);
 
     // generate_square
-    // Generates a square centered at origin and facing in the direction of the normal aligned with up.
-    //
-    // Parameters:
-    // origin      - the initial position of the square.
-    // normal      - the normal of the square. Must be normalized and non-zero.
-    // up          - the up vector of the square. Must be normalized and non-zero.
-    // edge_length - the length of the edge of the square.
+    // Generates a square centered at (0, 0, 0) with normal along -z. The edges are of length 1 and are aligned with the x and y axes.
     //
     // Returns:
-    // An array containing a triangle list.
+    // An array containing a triangle list in CCW order when looking at the square in the direction of +z.
     //
-    [[nodiscard]] Array<math::Vec3> generate_square(math::Vec3 const& origin, math::Vec3 const& normal, math::Vec3 const& up, f32 edge_length);
+    [[nodiscard]] Array<math::Vec3> generate_square();
 
     [[nodiscard]] Array<math::Vec3> generate_cube(f32 edge_length);
 
@@ -55,8 +46,7 @@ namespace anton::gizmo {
     // Returns:
     // Distance along ray's direction to the intersection point or null_optional if no intersection occured.
     //
-    [[nodiscard]] Optional<f32> intersect_square(math::Ray const& ray, math::Vec3 const& origin, math::Vec3 const& normal, math::Vec3 const& up,
-                                                 f32 edge_length, math::Mat4 const& world_transform);
+    [[nodiscard]] Optional<f32> intersect_square(math::Ray const& ray, math::Mat4 const& world_transform);
 
     // intersect_cube
     // Perform an intersection test of a ray against a cube.

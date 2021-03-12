@@ -5,8 +5,9 @@
 #include <utils.hpp>
 
 namespace anton::gizmo {
-    Array<math::Vec3> generate_filled_circle(math::Vec3 const& origin, math::Vec3 const& normal, f32 const radius, i32 const vertex_count) {
-        Array<math::Vec3> circle = generate_circle_new(origin, normal, radius, vertex_count);
+    Array<math::Vec3> generate_filled_circle(i32 const vertex_count) {
+        math::Vec3 const origin{0.0f, 0.0f, 0.0f};
+        Array<math::Vec3> circle = generate_circle_new(origin, math::Vec3{0.0f, 0.0f, -1.0f}, 1.0f, vertex_count);
         Array<math::Vec3> result{reserve, 3 * vertex_count};
         for(i64 i = 0; i < vertex_count; ++i) {
             math::Vec3 const& v2 = circle[i];
@@ -18,13 +19,11 @@ namespace anton::gizmo {
         return result;
     }
 
-    Array<math::Vec3> generate_square(math::Vec3 const& origin, math::Vec3 const& normal, math::Vec3 const& u, f32 const edge_length) {
-        f32 const half_size = 0.5f * edge_length;
-        math::Vec3 const r = math::cross(u, normal);
-        math::Vec3 const v1{half_size * (u - r)};
-        math::Vec3 const v2{half_size * (-u - r)};
-        math::Vec3 const v3{half_size * (u + r)};
-        math::Vec3 const v4{half_size * (-u + r)};
+    Array<math::Vec3> generate_square() {
+        math::Vec3 const v1{0.5f, 0.5f, 0.0f};
+        math::Vec3 const v2{0.5f, -0.5f, 0.0f};
+        math::Vec3 const v3{-0.5f, 0.5f, 0.0f};
+        math::Vec3 const v4{-0.5f, -0.5f, 0.0f};
         Array<math::Vec3> square{reserve, 6};
         square.emplace_back(v1);
         square.emplace_back(v2);
@@ -228,12 +227,11 @@ namespace anton::gizmo {
         return vertices;
     }
 
-    Optional<f32> intersect_square(math::Ray const& ray, math::Vec3 const& origin, math::Vec3 const& normal, math::Vec3 const& up, f32 const edge_length,
-                                   math::Mat4 const& world_transform) {
-        math::Vec3 const world_origin{world_transform * math::Vec4{origin, 1.0f}};
+    Optional<f32> intersect_square(math::Ray const& ray, math::Mat4 const& world_transform) {
+        math::Vec3 const world_origin{world_transform * math::Vec4{0.0f, 0.0f, 0.0f, 1.0f}};
         math::Mat4 const inverse_transform{math::inverse(world_transform)};
         math::Mat4 const transpose_inverse_transform{math::transpose(inverse_transform)};
-        math::Vec3 const world_normal{transpose_inverse_transform * math::Vec4{normal, 0.0f}};
+        math::Vec3 const world_normal{transpose_inverse_transform * math::Vec4{0.0f, 0.0f, -1.0f, 0.0f}};
         f32 const plane_distance = math::dot(world_origin, world_normal);
         Optional<Raycast_Hit> const hit = intersect_ray_plane(ray, world_normal, plane_distance);
         if(!hit) {
@@ -241,11 +239,15 @@ namespace anton::gizmo {
         }
 
         math::Vec3 const p{hit->hit_point - world_origin};
-        math::Vec3 const world_u{world_transform * math::Vec4{up, 0.0f}};
+        math::Vec3 world_u{world_transform * math::Vec4{0.0f, 1.0f, 0.0f, 0.0f}};
+        f32 const length_u = math::length(world_u);
+        world_u /= length_u;
         f32 const d_u = math::abs(math::dot(p, world_u));
-        math::Vec3 const world_r = math::cross(world_u, world_normal);
+        math::Vec3 world_r{world_transform * math::Vec4{1.0f, 0.0f, 0.0f, 0.0f}};
+        f32 const length_r = math::length(world_r);
+        world_r /= length_r;
         f32 const d_r = math::abs(math::dot(p, world_r));
-        if(d_u <= edge_length && d_r <= edge_length) {
+        if(d_u <= length_u && d_r <= length_r) {
             return hit->distance;
         } else {
             return null_optional;
