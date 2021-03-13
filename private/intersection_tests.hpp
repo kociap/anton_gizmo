@@ -1,6 +1,7 @@
 #pragma once
 
 #include <anton/gizmo/common.hpp>
+#include <anton/math/math.hpp>
 #include <anton/math/transform.hpp>
 #include <anton/math/vec3.hpp>
 #include <anton/math/vec4.hpp>
