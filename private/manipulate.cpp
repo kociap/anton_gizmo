@@ -50,8 +50,15 @@ namespace anton::gizmo {
 
         math::Vec3 const offset = initial_res->hit_point;
         if(auto res = intersect_ray_plane(ray, plane_normal, plane_distance)) {
-            math::Vec3 const delta = math::dot(res->hit_point - offset, axis) * axis;
-            return initial_scale + delta;
+            math::Vec3 const hit = res->hit_point;
+            f32 const offset_line_length = math::dot(offset - origin, axis);
+            f32 const hit_line_length = math::dot(hit - origin, axis);
+            f32 const factor = hit_line_length / offset_line_length;
+            // Find out how much scale is along axis
+            math::Vec3 const scale_along_axis = math::dot(initial_scale, axis) * axis;
+            // The rest of the scale should not be changed
+            math::Vec3 const remaining_scale = initial_scale - scale_along_axis;
+            return factor * scale_along_axis + remaining_scale;
         } else {
             return initial_scale;
         }
@@ -67,12 +74,22 @@ namespace anton::gizmo {
 
         math::Vec3 const offset = initial_res->hit_point;
         if(auto res = intersect_ray_plane(ray, plane_normal, plane_distance)) {
+            math::Vec3 const hit = res->hit_point;
+            math::Vec3 const origin_offset = offset - origin;
+            math::Vec3 const origin_hit = hit - origin;
+            f32 const origin_offset_length = math::length(origin_offset);
+            f32 const origin_hit_length = math::length(origin_hit);
+            f32 const sign = math::dot(origin_offset, origin_hit) >= 0 ? 1 : -1;
+            f32 const factor = sign * origin_hit_length / origin_offset_length;
+            // Find 2 random vectors in the plane
             math::Vec3 const v1 = math::perpendicular(plane_normal);
             math::Vec3 const v2 = math::cross(v1, plane_normal);
-            f32 const d = math::length(res->hit_point - offset);
-            math::Vec3 const d1 = d * v1;
-            math::Vec3 const d2 = d * v2;
-            return initial_scale + d1 + d2;
+            // Find out how much scale is along those vectors
+            math::Vec3 const scale_along_v1 = math::dot(initial_scale, v1) * v1;
+            math::Vec3 const scale_along_v2 = math::dot(initial_scale, v2) * v2;
+            // The rest of the scale should not be changed
+            math::Vec3 const remaining_scale = initial_scale - scale_along_v1 - scale_along_v2;
+            return factor * scale_along_v1 + factor * scale_along_v2 + remaining_scale;
         } else {
             return initial_scale;
         }
@@ -90,7 +107,11 @@ namespace anton::gizmo {
 
         math::Vec3 const offset = initial_res->hit_point;
         if(auto res = intersect_ray_plane(ray, plane_normal, plane_distance)) {
-            return initial_scale + math::dot(res->hit_point - offset, axis);
+            math::Vec3 const hit = res->hit_point;
+            f32 const offset_line_length = math::dot(offset - origin, axis);
+            f32 const hit_line_length = math::dot(hit - origin, axis);
+            f32 const factor = hit_line_length / offset_line_length;
+            return factor * initial_scale;
         } else {
             return initial_scale;
         }
@@ -106,7 +127,14 @@ namespace anton::gizmo {
 
         math::Vec3 const offset = initial_res->hit_point;
         if(auto res = intersect_ray_plane(ray, plane_normal, plane_distance)) {
-            return initial_scale + math::length(res->hit_point - offset);
+            math::Vec3 const hit = res->hit_point;
+            math::Vec3 const origin_offset = offset - origin;
+            math::Vec3 const origin_hit = hit - origin;
+            f32 const origin_offset_length = math::length(origin_offset);
+            f32 const origin_hit_length = math::length(origin_hit);
+            f32 const sign = math::dot(origin_offset, origin_hit) >= 0 ? 1 : -1;
+            f32 const factor = sign * origin_hit_length / origin_offset_length;
+            return factor * initial_scale;
         } else {
             return initial_scale;
         }
