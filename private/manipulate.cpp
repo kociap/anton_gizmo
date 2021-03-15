@@ -9,11 +9,12 @@ namespace anton::gizmo {
         math::Vec3 const plane_normal = math::normalize(ray.origin - point_on_axis);
         f32 const plane_distance = math::dot(origin, plane_normal);
         // Calculate cursor offset that we'll use to prevent the center of the object from snapping to the cursor
-        math::Vec3 offset;
-        if(auto res = intersect_ray_plane(initial_ray, plane_normal, plane_distance)) {
-            offset = res->hit_point;
+        auto const initial_res = intersect_ray_plane(initial_ray, plane_normal, plane_distance);
+        if(!initial_res) {
+            return origin;
         }
 
+        math::Vec3 const offset = initial_res->hit_point;
         if(auto res = intersect_ray_plane(ray, plane_normal, plane_distance)) {
             return origin + math::dot(res->hit_point - offset, axis) * axis;
         } else {
@@ -24,11 +25,12 @@ namespace anton::gizmo {
     math::Vec3 translate_along_plane(math::Ray const ray, math::Vec3 const plane_normal, math::Vec3 const origin, math::Ray const initial_ray) {
         f32 const plane_distance = math::dot(origin, plane_normal);
         // Calculate cursor offset that we'll use to prevent the center of the object from snapping to the cursor
-        math::Vec3 offset;
-        if(auto res = intersect_ray_plane(initial_ray, plane_normal, plane_distance)) {
-            offset = res->hit_point;
+        auto const initial_res = intersect_ray_plane(initial_ray, plane_normal, plane_distance);
+        if(!initial_res) {
+            return origin;
         }
 
+        math::Vec3 const offset = initial_res->hit_point;
         if(auto res = intersect_ray_plane(ray, plane_normal, plane_distance)) {
             return origin + res->hit_point - offset;
         } else {
@@ -41,12 +43,12 @@ namespace anton::gizmo {
         math::Vec3 const point_on_axis = origin + axis * math::dot(ray.origin - origin, axis);
         math::Vec3 const plane_normal = math::normalize(ray.origin - point_on_axis);
         f32 const plane_distance = math::dot(origin, plane_normal);
-        // Calculate cursor offset that we'll use to prevent the center of the object from snapping to the cursor
-        math::Vec3 offset;
-        if(auto res = intersect_ray_plane(initial_ray, plane_normal, plane_distance)) {
-            offset = res->hit_point;
+        auto const initial_res = intersect_ray_plane(initial_ray, plane_normal, plane_distance);
+        if(!initial_res) {
+            return initial_scale;
         }
 
+        math::Vec3 const offset = initial_res->hit_point;
         if(auto res = intersect_ray_plane(ray, plane_normal, plane_distance)) {
             math::Vec3 const delta = math::dot(res->hit_point - offset, axis) * axis;
             return initial_scale + delta;
@@ -58,12 +60,12 @@ namespace anton::gizmo {
     math::Vec3 scale_along_plane(math::Ray const ray, math::Vec3 const plane_normal, math::Vec3 const origin, math::Ray const initial_ray,
                                  math::Vec3 const initial_scale) {
         f32 const plane_distance = math::dot(origin, plane_normal);
-        // Calculate cursor offset that we'll use to prevent the center of the object from snapping to the cursor
-        math::Vec3 offset;
-        if(auto res = intersect_ray_plane(initial_ray, plane_normal, plane_distance)) {
-            offset = res->hit_point;
+        auto const initial_res = intersect_ray_plane(initial_ray, plane_normal, plane_distance);
+        if(!initial_res) {
+            return initial_scale;
         }
 
+        math::Vec3 const offset = initial_res->hit_point;
         if(auto res = intersect_ray_plane(ray, plane_normal, plane_distance)) {
             math::Vec3 const v1 = math::perpendicular(plane_normal);
             math::Vec3 const v2 = math::cross(v1, plane_normal);
@@ -81,12 +83,12 @@ namespace anton::gizmo {
         math::Vec3 const point_on_axis = origin + axis * math::dot(ray.origin - origin, axis);
         math::Vec3 const plane_normal = math::normalize(ray.origin - point_on_axis);
         f32 const plane_distance = math::dot(origin, plane_normal);
-        // Calculate cursor offset that we'll use to prevent the center of the object from snapping to the cursor
-        math::Vec3 offset;
-        if(auto res = intersect_ray_plane(initial_ray, plane_normal, plane_distance)) {
-            offset = res->hit_point;
+        auto const initial_res = intersect_ray_plane(initial_ray, plane_normal, plane_distance);
+        if(!initial_res) {
+            return initial_scale;
         }
 
+        math::Vec3 const offset = initial_res->hit_point;
         if(auto res = intersect_ray_plane(ray, plane_normal, plane_distance)) {
             return initial_scale + math::dot(res->hit_point - offset, axis);
         } else {
@@ -97,12 +99,12 @@ namespace anton::gizmo {
     math::Vec3 scale_uniform_along_plane(math::Ray const ray, math::Vec3 const plane_normal, math::Vec3 const origin, math::Ray const initial_ray,
                                          math::Vec3 const initial_scale) {
         f32 const plane_distance = math::dot(origin, plane_normal);
-        // Calculate cursor offset that we'll use to prevent the center of the object from snapping to the cursor
-        math::Vec3 offset;
-        if(auto res = intersect_ray_plane(initial_ray, plane_normal, plane_distance)) {
-            offset = res->hit_point;
+        auto const initial_res = intersect_ray_plane(initial_ray, plane_normal, plane_distance);
+        if(!initial_res) {
+            return initial_scale;
         }
 
+        math::Vec3 const offset = initial_res->hit_point;
         if(auto res = intersect_ray_plane(ray, plane_normal, plane_distance)) {
             return initial_scale + math::length(res->hit_point - offset);
         } else {
@@ -115,7 +117,7 @@ namespace anton::gizmo {
         math::Vec3 const plane_normal = math::normalize(axis);
         f32 const plane_distance = math::dot(origin, plane_normal);
         // Calculate cursor offset
-        auto offset_res = intersect_ray_plane(initial_ray, plane_normal, plane_distance);
+        auto const offset_res = intersect_ray_plane(initial_ray, plane_normal, plane_distance);
         if(!offset_res) {
             return initial_orientation;
         }
@@ -134,7 +136,8 @@ namespace anton::gizmo {
     math::Quat orient_trackball(math::Ray const ray, math::Vec3 const plane_normal, math::Vec3 const origin, math::Ray const initial_ray,
                                 math::Quat const initial_orientation) {
         f32 const plane_distance = math::dot(origin, plane_normal);
-        auto offset_res = intersect_ray_plane(initial_ray, plane_normal, plane_distance);
+        // Calculate cursor offset
+        auto const offset_res = intersect_ray_plane(initial_ray, plane_normal, plane_distance);
         if(!offset_res) {
             return initial_orientation;
         }
