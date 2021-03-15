@@ -36,7 +36,6 @@ target_link_libraries(anton_gizmo PUBLIC anton_core)
 target_sources(anton_gizmo
     PUBLIC 
     "${CMAKE_CURRENT_SOURCE_DIR}/public/anton/gizmo/arrow_3d.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/public/anton/gizmo/common.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/public/anton/gizmo/dial_3d.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/public/anton/gizmo/gizmo.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/public/anton/gizmo/manipulate.hpp"

@@ -1,10 +1,5 @@
 #include <anton/gizmo/dial_3d.hpp>
 
-#include <anton/math/mat4.hpp>
-#include <anton/math/math.hpp>
-#include <anton/math/quat.hpp>
-#include <anton/math/vec2.hpp>
-#include <anton/math/vec3.hpp>
 #include <intersection_tests.hpp>
 #include <utils.hpp>
 

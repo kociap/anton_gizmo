@@ -1,6 +1,7 @@
 #include <anton/gizmo/manipulate.hpp>
 
 #include <intersection_tests.hpp>
+#include <utils.hpp>
 
 namespace anton::gizmo {
     math::Vec3 translate_along_line(math::Ray const ray, math::Vec3 const axis, math::Vec3 const origin, math::Ray const initial_ray) {
@@ -47,7 +48,8 @@ namespace anton::gizmo {
         }
 
         if(auto res = intersect_ray_plane(ray, plane_normal, plane_distance)) {
-            return initial_scale + math::dot(res->hit_point - offset, axis) * axis;
+            math::Vec3 const delta = math::dot(res->hit_point - offset, axis) * axis;
+            return initial_scale + delta;
         } else {
             return initial_scale;
         }
@@ -63,7 +65,12 @@ namespace anton::gizmo {
         }
 
         if(auto res = intersect_ray_plane(ray, plane_normal, plane_distance)) {
-            return initial_scale + res->hit_point - offset;
+            math::Vec3 const v1 = math::perpendicular(plane_normal);
+            math::Vec3 const v2 = math::cross(v1, plane_normal);
+            f32 const d = math::length(res->hit_point - offset);
+            math::Vec3 const d1 = d * v1;
+            math::Vec3 const d2 = d * v2;
+            return initial_scale + d1 + d2;
         } else {
             return initial_scale;
         }

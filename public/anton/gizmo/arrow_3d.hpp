@@ -1,8 +1,10 @@
 #pragma once
 
 #include <anton/array.hpp>
-#include <anton/gizmo/common.hpp>
+#include <anton/math/mat4.hpp>
+#include <anton/math/primitives.hpp>
 #include <anton/optional.hpp>
+#include <anton/types.hpp>
 
 namespace anton::gizmo {
     // Arrow head style
