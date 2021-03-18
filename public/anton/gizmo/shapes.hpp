@@ -9,7 +9,7 @@
 
 namespace anton::gizmo {
     // generate_filled_circle
-    // Generates a filled circle of radius 1 centered at (0, 0, 0) with normal along -z.
+    // Generates a filled circle of radius 1.0 centered at (0, 0, 0) with normal along -z.
     //
     // Parameters:
     // vertex_count - the number of vertices that the circle will consist of.
@@ -20,7 +20,7 @@ namespace anton::gizmo {
     [[nodiscard]] Array<math::Vec3> generate_filled_circle(i32 vertex_count);
 
     // generate_square
-    // Generates a square centered at (0, 0, 0) with normal along -z. The edges are of length 1 and are aligned with the x and y axes.
+    // Generates a square centered at (0, 0, 0) with normal along -z. The edges are of length 1.0 and are aligned with the x and y axes.
     //
     // Returns:
     // An array containing a triangle list in CCW order when looking at the square in the direction of +z.
@@ -42,9 +42,28 @@ namespace anton::gizmo {
     //
     [[nodiscard]] Array<math::Vec3> generate_icosphere(f32 radius, i64 subdivision_level);
 
-    // intersect_square
+    // intersect_circle
+    // Perform an intersection test of a ray against a circle.
+    // Before being transformed using world_transform, the circle is centered at (0, 0, 0)
+    // with normal along -z and radius 1.0.
     //
     // Parameters:
+    // ray             - a world space ray to test against.
+    // world_transform - a transform to world space.
+    //
+    // Returns:
+    // Distance along ray's direction to the intersection point or null_optional if no intersection occured.
+    //
+    [[nodiscard]] Optional<f32> intersect_circle(math::Ray const& ray, math::Mat4 const& world_transform);
+
+    // intersect_square
+    // Perform an intersection test of a ray against a square.
+    // Before being transformed using world_transform, the square is centered at (0, 0, 0)
+    // with normal along -z and edges of length 1.0 along x and y axes.
+    //
+    // Parameters:
+    // ray             - a world space ray to test against.
+    // world_transform - a transform to world space.
     //
     // Returns:
     // Distance along ray's direction to the intersection point or null_optional if no intersection occured.

@@ -227,6 +227,28 @@ namespace anton::gizmo {
         return vertices;
     }
 
+    Optional<f32> intersect_circle(math::Ray const& ray, math::Mat4 const& world_transform) {
+        math::Vec3 const world_origin{world_transform * math::Vec4{0.0f, 0.0f, 0.0f, 1.0f}};
+        math::Mat4 const inverse_transform{math::inverse(world_transform)};
+        math::Mat4 const transpose_inverse_transform{math::transpose(inverse_transform)};
+        math::Vec3 const world_normal{transpose_inverse_transform * math::Vec4{0.0f, 0.0f, -1.0f, 0.0f}};
+        f32 const plane_distance = math::dot(world_origin, world_normal);
+        Optional<Raycast_Hit> const hit = intersect_ray_plane(ray, world_normal, plane_distance);
+        if(!hit) {
+            return null_optional;
+        }
+
+        math::Vec4 const radius_vector{1.0f, 0.0f, 0.0f, 0.0f};
+        math::Vec3 const world_radius{world_transform * radius_vector};
+        f32 const radius_squared = math::length_squared(world_radius);
+        f32 const hit_distance_squared = math::length_squared(hit->hit_point - world_origin);
+        if(hit_distance_squared <= radius_squared) {
+            return hit->distance;
+        } else {
+            return null_optional;
+        }
+    }
+
     Optional<f32> intersect_square(math::Ray const& ray, math::Mat4 const& world_transform) {
         math::Vec3 const world_origin{world_transform * math::Vec4{0.0f, 0.0f, 0.0f, 1.0f}};
         math::Mat4 const inverse_transform{math::inverse(world_transform)};
