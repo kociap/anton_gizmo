@@ -8,10 +8,10 @@
 
 namespace anton::gizmo {
     struct Dial_3D {
-        // Size of the dial.
-        f32 major_diameter;
+        // Radius of the dial.
+        f32 major_radius;
         // Thickness of the dial.
-        f32 minor_diameter;
+        f32 minor_radius;
     };
 
     // generate_dial_3d_geometry

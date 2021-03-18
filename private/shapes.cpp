@@ -7,7 +7,7 @@
 namespace anton::gizmo {
     Array<math::Vec3> generate_filled_circle(i32 const vertex_count) {
         math::Vec3 const origin{0.0f, 0.0f, 0.0f};
-        Array<math::Vec3> circle = generate_circle_new(origin, math::Vec3{0.0f, 0.0f, -1.0f}, 1.0f, vertex_count);
+        Array<math::Vec3> circle = generate_circle(origin, math::Vec3{0.0f, 0.0f, -1.0f}, 1.0f, vertex_count);
         Array<math::Vec3> result{reserve, 3 * vertex_count};
         for(i64 i = 0; i < vertex_count; ++i) {
             math::Vec3 const& v2 = circle[i];

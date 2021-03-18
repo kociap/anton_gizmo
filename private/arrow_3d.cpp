@@ -5,7 +5,7 @@
 
 namespace anton::gizmo {
     [[nodiscard]] static Array<math::Vec3> generate_cone_geometry(Arrow_3D const& arrow, i32 const vert_count) {
-        Array<math::Vec3> circle = generate_circle(math::Vec3{0.0f}, math::Vec3{0.0f, 0.0f, -1.0f}, 1.0f, vert_count);
+        Array<math::Vec3> circle = generate_circle(math::Vec3{0.0f}, math::Vec3{0.0f, 0.0f, -1.0f}, 0.5f, vert_count);
         f32 const cap_size = arrow.cap_size;
         f32 const cap_length = arrow.cap_length;
         f32 const shaft_length = arrow.shaft_length;
@@ -39,7 +39,7 @@ namespace anton::gizmo {
     }
 
     [[nodiscard]] static Array<math::Vec3> generate_cube_geometry(Arrow_3D const& arrow, i32 const vert_count) {
-        Array<math::Vec3> circle = generate_circle(math::Vec3{0.0f}, math::Vec3{0.0f, 0.0f, -1.0f}, 1.0f, vert_count);
+        Array<math::Vec3> circle = generate_circle(math::Vec3{0.0f}, math::Vec3{0.0f, 0.0f, -1.0f}, 0.5f, vert_count);
         f32 const shaft_length = arrow.shaft_length;
         f32 const shaft_diameter = arrow.shaft_diameter;
         f32 const half_size = 0.5f * arrow.cap_size;
