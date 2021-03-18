@@ -8,6 +8,8 @@
 
 namespace anton::gizmo {
     // translate_along_line
+    // Translate in the direction of axis. The position change is calculated based on
+    // the difference between initial_ray and ray along axis.
     //
     // Parameters:
     // ray              - the current ray constructed by unprojecting the cursor.
@@ -24,6 +26,9 @@ namespace anton::gizmo {
                                                   f32 snap = 0.0f);
 
     // translate_along_plane
+    // Translate in the directions perpendicular to plane_normal.
+    // The position change is calculated based on the difference between initial_ray
+    // and ray in the plane defined by plane_normal and origin.
     //
     // Parameters:
     // ray              - the current ray constructed by unprojecting the cursor.
