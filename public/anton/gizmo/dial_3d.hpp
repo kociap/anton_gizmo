@@ -18,7 +18,7 @@ namespace anton::gizmo {
     // Generates the geometry of a dial. The dial lies in a plane with its normal directed towards -z and is centered at (0, 0, 0).
     //
     // Parameters:
-    // dial - Parameter struct that defines the size of the geometry.
+    // dial               - Parameter struct that defines the size of the geometry.
     // vertex_count_major - the number of vertices that comprise the large circle of the dial.
     // vertex_count_minor - the number of vertices that comprise the small circle of the dial.
     //
@@ -32,9 +32,11 @@ namespace anton::gizmo {
     // The dial is located at (0, 0, 0) and is aligned with the -z axis before being transformed into world space.
     //
     // Parameters:
-    // ray - A world space ray to test against.
-    // dial - Parameter struct that defines the size of the bounding volumes. Should be identical to that passed generate_dial_3d_geometry.
-    // world_transform - A translation-rotation transform to world space.
+    // ray             - a world space ray to test against.
+    // dial            - parameter struct that defines the size of the bounding volumes.
+    //                   Should be identical to that passed to generate_dial_3d_geometry.
+    // world_transform - a transform to the world space. The transform must consist of
+    //                   translation, rotation and uniform scale only.
     //
     // Returns:
     // Distance along ray's direction to the intersection point or null_optional if no intersection occured.

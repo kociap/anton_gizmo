@@ -38,22 +38,29 @@ namespace anton::gizmo {
     }
 
     Optional<f32> intersect_dial_3d(math::Ray const ray, Dial_3D const& dial, math::Mat4 const& world_transform) {
+        math::Vec3 const origin{world_transform * math::Vec4{0.0f}};
         math::Vec3 const v1{world_transform * math::Vec4{0.0f, 0.0f, -dial.minor_radius, 1.0f}};
         math::Vec3 const v2{world_transform * math::Vec4{0.0f, 0.0f, dial.minor_radius, 1.0f}};
-        f32 const r_large = dial.major_radius + dial.minor_radius;
-        f32 const r_small = dial.major_radius - dial.minor_radius;
+        f32 const scale = math::length(v2 - v1) / (2 * dial.minor_radius);
+        f32 const r_large = scale * (dial.major_radius + dial.minor_radius);
+        f32 const r_small = scale * (dial.major_radius - dial.minor_radius);
         Optional<f32> result = null_optional;
-        if(Optional<Raycast_Hit> res = intersect_ray_cylinder(ray, v1, v2, r_large)) {
-            result = res->distance;
+        Optional<Raycast_Hit> const large_hit = intersect_ray_cylinder(ray, v1, v2, r_large);
+        if(large_hit) {
+            result = large_hit->distance;
         }
 
         if(!math::is_almost_zero(r_small, 0.001f)) {
-            if(Optional<Raycast_Hit> res = intersect_ray_cylinder(ray, v1, v2, r_small); res && (result && res->distance <= *result)) {
+            // We create a cutout by testing for an intersection with a cylinder located inside the larger cylinder.
+            Optional<Raycast_Hit> const cutout_hit = intersect_ray_cylinder(ray, v1, v2, r_small);
+            if(cutout_hit && (result && cutout_hit->distance <= *result)) {
                 result = null_optional;
             }
 
-            if(Optional<Raycast_Hit> res = intersect_ray_cylinder_uncapped(ray, v1, v2, r_small); res && (!result || res->distance < *result)) {
-                result = res->distance;
+            // We have to test for the ring as well to make sure that the dial can be hit from the inside.
+            Optional<Raycast_Hit> const ring_hit = intersect_ray_cylinder_uncapped(ray, v1, v2, r_small);
+            if(ring_hit && (!result || ring_hit->distance < *result)) {
+                result = ring_hit->distance;
             }
         }
 
