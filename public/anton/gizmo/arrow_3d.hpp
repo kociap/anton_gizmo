@@ -32,7 +32,7 @@ namespace anton::gizmo {
     //  - cube: shaft_length + 0.5 * cap_size
     //
     // Parameters:
-    // arrow - Parameter struct that defines the shape and size of the geometry.
+    // arrow        - parameter struct that defines the shape and size of the geometry.
     // vertex_count - the number of vertices that comprise the base of the cone (in case cone is the draw_style).
     //
     // Returns:
@@ -45,9 +45,11 @@ namespace anton::gizmo {
     // The arrows is located at (0, 0, 0) and is aligned with the -z axis before being transformed into world space.
     //
     // Parameters:
-    // ray - A world space ray to test against.
-    // arrow - Parameter struct that defines the shape and size of the bounding volumes. Should be identical to that passed generate_arrow_3d_geometry.
-    // world_transform - A translation-rotation transform to world space.
+    // ray             - a world space ray to test against.
+    // arrow           - parameter struct that defines the shape and size of the bounding volumes.
+    //                   Should be identical to that passed to generate_arrow_3d_geometry.
+    // world_transform - a transform to the world space. The transform must consist of
+    //                   translation, rotation and uniform scale only.
     //
     // Returns:
     // Distance along ray's direction to the intersection point or null_optional if no intersection occured.
