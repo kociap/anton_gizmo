@@ -231,7 +231,7 @@ namespace anton::gizmo {
         math::Vec3 const world_origin{world_transform * math::Vec4{0.0f, 0.0f, 0.0f, 1.0f}};
         math::Mat4 const inverse_transform{math::inverse(world_transform)};
         math::Mat4 const transpose_inverse_transform{math::transpose(inverse_transform)};
-        math::Vec3 const world_normal{transpose_inverse_transform * math::Vec4{0.0f, 0.0f, -1.0f, 0.0f}};
+        math::Vec3 const world_normal{math::normalize(transpose_inverse_transform * math::Vec4{0.0f, 0.0f, -1.0f, 0.0f})};
         f32 const plane_distance = math::dot(world_origin, world_normal);
         Optional<Raycast_Hit> const hit = intersect_ray_plane(ray, world_normal, plane_distance);
         if(!hit) {
@@ -253,7 +253,7 @@ namespace anton::gizmo {
         math::Vec3 const world_origin{world_transform * math::Vec4{0.0f, 0.0f, 0.0f, 1.0f}};
         math::Mat4 const inverse_transform{math::inverse(world_transform)};
         math::Mat4 const transpose_inverse_transform{math::transpose(inverse_transform)};
-        math::Vec3 const world_normal{transpose_inverse_transform * math::Vec4{0.0f, 0.0f, -1.0f, 0.0f}};
+        math::Vec3 const world_normal{math::normalize(transpose_inverse_transform * math::Vec4{0.0f, 0.0f, -1.0f, 0.0f})};
         f32 const plane_distance = math::dot(world_origin, world_normal);
         Optional<Raycast_Hit> const hit = intersect_ray_plane(ray, world_normal, plane_distance);
         if(!hit) {
@@ -285,7 +285,7 @@ namespace anton::gizmo {
         cube_bounding_vol.center = math::Vec3(world_transform * math::Vec4{0.0f, 0.0f, 0.0f, 1.0f});
         Optional<Raycast_Hit> const hit = intersect_ray_obb(ray, cube_bounding_vol);
         if(hit) {
-            return Optional<f32>{hit->distance};
+            return hit->distance;
         } else {
             return null_optional;
         }
@@ -295,7 +295,7 @@ namespace anton::gizmo {
         math::Vec3 const origin{world_transform * math::Vec4{0.0f, 0.0f, 0.0f, 1.0f}};
         Optional<Raycast_Hit> const hit = intersect_ray_sphere(ray, origin, radius);
         if(hit) {
-            return Optional<f32>{hit->distance};
+            return hit->distance;
         } else {
             return null_optional;
         }

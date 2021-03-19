@@ -49,7 +49,8 @@ namespace anton::gizmo {
     //
     // Parameters:
     // ray             - a world space ray to test against.
-    // world_transform - a transform to world space.
+    // world_transform - a transform to the world space. The transform must consist of
+    //                   translation, rotation and uniform scale only.
     //
     // Returns:
     // Distance along ray's direction to the intersection point or null_optional if no intersection occured.
@@ -63,7 +64,8 @@ namespace anton::gizmo {
     //
     // Parameters:
     // ray             - a world space ray to test against.
-    // world_transform - a transform to world space.
+    // world_transform - a transform to the world space. The transform must consist of
+    //                   translation, rotation and uniform scale only.
     //
     // Returns:
     // Distance along ray's direction to the intersection point or null_optional if no intersection occured.
