@@ -83,14 +83,14 @@ namespace anton::gizmo {
         return cube;
     }
 
-    Array<math::Vec3> generate_icosphere(f32 const radius, i64 const subdivision_level) {
-        f32 const vert_inv_len = radius * math::inv_sqrt(1.0f + math::golden_ratio * math::golden_ratio);
-
+    Array<math::Vec3> generate_icosphere(i64 const subdivision_level) {
         // The vertices of an icoshpere are formed by the corners of 3 orthogonal intersecting
         // rectangles with edge lengths 1 and golden ratio.
         // The first letter is the axis along which the shorter edge of the rectangle is.
         // The second letter is the axis along which the longer edge of the rectangle is.
         // Points are in CCW order from the top-left (when the plane normal is facing us and the 2nd axis is oriented upwards).
+
+        f32 const vert_inv_len = math::inv_sqrt(1.0f + math::golden_ratio * math::golden_ratio);
 
         math::Vec3 const xy_v1 = math::Vec3{-1.0f, math::golden_ratio, 0.0f} * vert_inv_len;
         math::Vec3 const xy_v2 = math::Vec3{-1.0f, -math::golden_ratio, 0.0f} * vert_inv_len;
@@ -201,9 +201,9 @@ namespace anton::gizmo {
                 math::Vec3& v2 = vertices[i + 1];
                 math::Vec3& v3 = vertices[i + 2];
 
-                math::Vec3 const a = radius * math::normalize(v1 + v2);
-                math::Vec3 const b = radius * math::normalize(v1 + v3);
-                math::Vec3 const c = radius * math::normalize(v2 + v3);
+                math::Vec3 const a = math::normalize(v1 + v2);
+                math::Vec3 const b = math::normalize(v1 + v3);
+                math::Vec3 const c = math::normalize(v2 + v3);
 
                 subdivided.emplace_back(v1);
                 subdivided.emplace_back(a);

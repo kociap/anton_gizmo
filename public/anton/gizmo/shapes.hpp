@@ -38,17 +38,16 @@ namespace anton::gizmo {
     [[nodiscard]] Array<math::Vec3> generate_cube();
 
     // generate_icosphere
-    // Generates an icosphere centered at (0, 0, 0).
+    // Generates an icosphere centered at (0, 0, 0) with radius 1.0.
     //
     // Parameters:
-    // radius            - the radius of the icosphere.
     // subdivision_level - the level of subdivision of the icosphere. Each level increases detail
     //                     and smoothness at the expense of quadrupling the triangle count.
     //
     // Returns:
-    // An array containing a triangle list.
+    // An array containing a triangle list in CCW order when looking at the icosphere from outside.
     //
-    [[nodiscard]] Array<math::Vec3> generate_icosphere(f32 radius, i64 subdivision_level);
+    [[nodiscard]] Array<math::Vec3> generate_icosphere(i64 subdivision_level);
 
     // intersect_circle
     // Perform an intersection test of a ray against a circle.
