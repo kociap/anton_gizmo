@@ -117,7 +117,24 @@ namespace anton::gizmo {
     [[nodiscard]] math::Vec3 scale_uniform_along_plane(math::Ray ray, math::Vec3 plane_normal, math::Vec3 origin, math::Ray initial_ray,
                                                        math::Vec3 initial_scale, f32 snap = 0.0f);
 
-    [[nodiscard]] math::Quat orient_turn(math::Ray ray, math::Vec3 axis, math::Vec3 origin, math::Ray initial_ray, math::Quat initial_orientation);
+    // orient_turn
+    // Orient by rotating about axis. The orientation change is calculated based on the difference
+    // between initial_ray and ray in the plane defined by axis and origin.
+    //
+    // Parameters:
+    // ray                 - the current ray constructed by unprojecting the cursor.
+    // axis                - the axis of rotation. Must be normalized.
+    // origin              - the origin of the manipulation.
+    // initial_ray         - the ray at the start of the manipulation.
+    // initial_orientation - the scale at the start of the manipulation.
+    // snap                - grid snapping (disabled if snap == 0). Change in orientation
+    //                       will be rounded to the nearest multiple of snap.
+    //
+    // Returns:
+    // The transformed orientation.
+    //
+    [[nodiscard]] math::Quat orient_turn(math::Ray ray, math::Vec3 axis, math::Vec3 origin, math::Ray initial_ray, math::Quat initial_orientation,
+                                         f32 snap = 0.0f);
 
     [[nodiscard]] math::Quat orient_trackball(math::Ray ray, math::Vec3 plane_normal, math::Vec3 origin, math::Ray initial_ray, math::Quat initial_orientation);
 } // namespace anton::gizmo
