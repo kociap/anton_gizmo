@@ -276,12 +276,12 @@ namespace anton::gizmo {
         }
     }
 
-    Optional<f32> intersect_cube(math::Ray const& ray, f32 const edge_length, math::Mat4 const& world_transform) {
+    Optional<f32> intersect_cube(math::Ray const& ray, math::Mat4 const& world_transform) {
         math::OBB cube_bounding_vol;
-        cube_bounding_vol.local_x = math::Vec3(world_transform * math::Vec4(1.0f, 0.0f, 0.0f, 0.0f));
-        cube_bounding_vol.local_y = math::Vec3(world_transform * math::Vec4(0.0f, 1.0f, 0.0f, 0.0f));
-        cube_bounding_vol.local_z = math::Vec3(world_transform * math::Vec4(0.0f, 0.0f, -1.0f, 0.0f));
-        cube_bounding_vol.halfwidths = math::Vec3{0.5f * edge_length};
+        cube_bounding_vol.local_x = math::normalize(math::Vec3(world_transform * math::Vec4(1.0f, 0.0f, 0.0f, 0.0f)));
+        cube_bounding_vol.local_y = math::normalize(math::Vec3(world_transform * math::Vec4(0.0f, 1.0f, 0.0f, 0.0f)));
+        cube_bounding_vol.local_z = math::normalize(math::Vec3(world_transform * math::Vec4(0.0f, 0.0f, -1.0f, 0.0f)));
+        cube_bounding_vol.halfwidths = math::Vec3{0.5f * math::length(math::Vec3{world_transform[0]})};
         cube_bounding_vol.center = math::Vec3(world_transform * math::Vec4{0.0f, 0.0f, 0.0f, 1.0f});
         Optional<Raycast_Hit> const hit = intersect_ray_obb(ray, cube_bounding_vol);
         if(hit) {
@@ -291,8 +291,9 @@ namespace anton::gizmo {
         }
     }
 
-    Optional<f32> intersect_sphere(math::Ray const& ray, f32 radius, math::Mat4 const& world_transform) {
+    Optional<f32> intersect_sphere(math::Ray const& ray, math::Mat4 const& world_transform) {
         math::Vec3 const origin{world_transform * math::Vec4{0.0f, 0.0f, 0.0f, 1.0f}};
+        f32 const radius = math::length(math::Vec3{world_transform[0]});
         Optional<Raycast_Hit> const hit = intersect_ray_sphere(ray, origin, radius);
         if(hit) {
             return hit->distance;
