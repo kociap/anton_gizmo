@@ -5,7 +5,7 @@
 
 namespace anton::gizmo {
     math::Vec3 translate_along_line(math::Ray const ray, math::Vec3 const axis, math::Vec3 const origin, math::Ray const initial_ray,
-                                    math::Vec3 const initial_position, f32 const snap) {
+                                    math::Vec3 const initial_position, f32 const speed, f32 const snap) {
         math::Vec3 const point_on_axis = origin + axis * math::dot(ray.origin - origin, axis);
         math::Vec3 const plane_normal = math::normalize(ray.origin - point_on_axis);
         f32 const plane_distance = math::dot(origin, plane_normal);
@@ -18,6 +18,7 @@ namespace anton::gizmo {
         math::Vec3 const offset = initial_res->hit_point;
         if(auto res = intersect_ray_plane(ray, plane_normal, plane_distance)) {
             f32 delta = math::dot(res->hit_point - offset, axis);
+            delta *= speed;
             if(snap != 0.0f) {
                 delta = math::round_to_nearest(delta, snap);
             }
@@ -28,7 +29,7 @@ namespace anton::gizmo {
     }
 
     math::Vec3 translate_along_plane(math::Ray const ray, math::Vec3 const plane_normal, math::Vec3 const origin, math::Ray const initial_ray,
-                                     math::Vec3 const initial_position, f32 const snap) {
+                                     math::Vec3 const initial_position, f32 const speed, f32 const snap) {
         f32 const plane_distance = math::dot(origin, plane_normal);
         // Calculate cursor offset that we'll use to prevent the center of the object from snapping to the cursor
         auto const initial_res = intersect_ray_plane(initial_ray, plane_normal, plane_distance);
@@ -39,6 +40,7 @@ namespace anton::gizmo {
         math::Vec3 const offset = initial_res->hit_point;
         if(auto res = intersect_ray_plane(ray, plane_normal, plane_distance)) {
             math::Vec3 delta = res->hit_point - offset;
+            delta *= speed;
             if(snap != 0.0f) {
                 delta.x = math::round_to_nearest(delta.x, snap);
                 delta.y = math::round_to_nearest(delta.y, snap);
@@ -51,7 +53,7 @@ namespace anton::gizmo {
     }
 
     math::Vec3 scale_along_line(math::Ray const ray, math::Vec3 const axis, math::Vec3 const origin, math::Ray const initial_ray,
-                                math::Vec3 const initial_scale, f32 const snap) {
+                                math::Vec3 const initial_scale, f32 const speed, f32 const snap) {
         math::Vec3 const point_on_axis = origin + axis * math::dot(ray.origin - origin, axis);
         math::Vec3 const plane_normal = math::normalize(ray.origin - point_on_axis);
         f32 const plane_distance = math::dot(origin, plane_normal);
@@ -66,6 +68,7 @@ namespace anton::gizmo {
             f32 const offset_line_length = math::dot(offset - origin, axis);
             f32 const hit_line_length = math::dot(hit - origin, axis);
             f32 factor = hit_line_length / offset_line_length;
+            factor *= speed;
             if(snap != 0.0f) {
                 factor = math::round_to_nearest(factor, snap);
             }
@@ -80,7 +83,7 @@ namespace anton::gizmo {
     }
 
     math::Vec3 scale_along_plane(math::Ray const ray, math::Vec3 const plane_normal, math::Vec3 const origin, math::Ray const initial_ray,
-                                 math::Vec3 const initial_scale, f32 const snap) {
+                                 math::Vec3 const initial_scale, f32 const speed, f32 const snap) {
         f32 const plane_distance = math::dot(origin, plane_normal);
         auto const initial_res = intersect_ray_plane(initial_ray, plane_normal, plane_distance);
         if(!initial_res) {
@@ -96,6 +99,7 @@ namespace anton::gizmo {
             f32 const origin_hit_length = math::length(origin_hit);
             f32 const sign = math::dot(origin_offset, origin_hit) >= 0 ? 1 : -1;
             f32 factor = sign * origin_hit_length / origin_offset_length;
+            factor *= speed;
             if(snap != 0.0f) {
                 factor = math::round_to_nearest(factor, snap);
             }
@@ -114,7 +118,7 @@ namespace anton::gizmo {
     }
 
     math::Vec3 scale_uniform_along_line(math::Ray const ray, math::Vec3 const axis, math::Vec3 const origin, math::Ray const initial_ray,
-                                        math::Vec3 const initial_scale, f32 const snap) {
+                                        math::Vec3 const initial_scale, f32 const speed, f32 const snap) {
         math::Vec3 const point_on_axis = origin + axis * math::dot(ray.origin - origin, axis);
         math::Vec3 const plane_normal = math::normalize(ray.origin - point_on_axis);
         f32 const plane_distance = math::dot(origin, plane_normal);
@@ -129,6 +133,7 @@ namespace anton::gizmo {
             f32 const offset_line_length = math::dot(offset - origin, axis);
             f32 const hit_line_length = math::dot(hit - origin, axis);
             f32 factor = hit_line_length / offset_line_length;
+            factor *= speed;
             if(snap != 0.0f) {
                 factor = math::round_to_nearest(factor, snap);
             }
@@ -139,7 +144,7 @@ namespace anton::gizmo {
     }
 
     math::Vec3 scale_uniform_along_plane(math::Ray const ray, math::Vec3 const plane_normal, math::Vec3 const origin, math::Ray const initial_ray,
-                                         math::Vec3 const initial_scale, f32 const snap) {
+                                         math::Vec3 const initial_scale, f32 const speed, f32 const snap) {
         f32 const plane_distance = math::dot(origin, plane_normal);
         auto const initial_res = intersect_ray_plane(initial_ray, plane_normal, plane_distance);
         if(!initial_res) {
@@ -155,6 +160,7 @@ namespace anton::gizmo {
             f32 const origin_hit_length = math::length(origin_hit);
             f32 const sign = math::dot(origin_offset, origin_hit) >= 0 ? 1 : -1;
             f32 factor = sign * origin_hit_length / origin_offset_length;
+            factor *= speed;
             if(snap != 0.0f) {
                 factor = math::round_to_nearest(factor, snap);
             }
