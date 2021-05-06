@@ -1,9 +1,7 @@
 # anton_gizmo
 
-The library uses row-major matrices and right-handed coordinate system.
+![Translation Gizmo](https://raw.githubusercontent.com/kociap/media/master/anton_gizmo/gizmos_translation.png)
+![Orientation Gizmo](https://raw.githubusercontent.com/kociap/media/master/anton_gizmo/gizmos_rotation.png)
+![Scale Gizmo](https://raw.githubusercontent.com/kociap/media/master/anton_gizmo/gizmos_scale.png)
 
-# TODO
- - Dial intersection
- - Gizmos customization
- - Manipulation functions
  
