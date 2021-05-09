@@ -4,8 +4,8 @@
 #include <utils.hpp>
 
 namespace anton::gizmo {
-    math::Vec3 translate_along_line(math::Ray const ray, math::Vec3 const axis, math::Vec3 const origin, math::Ray const initial_ray,
-                                    math::Vec3 const initial_position, f32 const speed, f32 const snap) {
+    math::Vec3 translate_along_line(math::Mat4 const inverse_world_transform, math::Ray const ray, math::Vec3 const axis, math::Vec3 const origin,
+                                    math::Ray const initial_ray, math::Vec3 const initial_position, f32 const speed, f32 const snap) {
         math::Vec3 const point_on_axis = origin + axis * math::dot(ray.origin - origin, axis);
         math::Vec3 const plane_normal = math::normalize(ray.origin - point_on_axis);
         f32 const plane_distance = math::dot(origin, plane_normal);
@@ -16,20 +16,24 @@ namespace anton::gizmo {
         }
 
         math::Vec3 const offset = initial_res->hit_point;
-        if(auto res = intersect_ray_plane(ray, plane_normal, plane_distance)) {
+        auto const res = intersect_ray_plane(ray, plane_normal, plane_distance);
+        if(res) {
             f32 delta = math::dot(res->hit_point - offset, axis);
             delta *= speed;
             if(snap != 0.0f) {
                 delta = math::round_to_nearest(delta, snap);
             }
-            return initial_position + delta * axis;
+            // Project the axis into the local space of the object.
+            // Scaling the axis in the local space by the delta should be sufficient.
+            math::Vec3 const axis_local{inverse_world_transform * math::Vec4{axis, 0.0f}};
+            return initial_position + delta * axis_local;
         } else {
             return initial_position;
         }
     }
 
-    math::Vec3 translate_along_plane(math::Ray const ray, math::Vec3 const plane_normal, math::Vec3 const origin, math::Ray const initial_ray,
-                                     math::Vec3 const initial_position, f32 const speed, f32 const snap) {
+    math::Vec3 translate_along_plane(math::Mat4 const inverse_world_transform, math::Ray const ray, math::Vec3 const plane_normal, math::Vec3 const origin,
+                                     math::Ray const initial_ray, math::Vec3 const initial_position, f32 const speed, f32 const snap) {
         f32 const plane_distance = math::dot(origin, plane_normal);
         // Calculate cursor offset that we'll use to prevent the center of the object from snapping to the cursor
         auto const initial_res = intersect_ray_plane(initial_ray, plane_normal, plane_distance);
@@ -37,8 +41,9 @@ namespace anton::gizmo {
             return initial_position;
         }
 
-        math::Vec3 const offset = initial_res->hit_point;
-        if(auto res = intersect_ray_plane(ray, plane_normal, plane_distance)) {
+        auto res = intersect_ray_plane(ray, plane_normal, plane_distance);
+        if(res) {
+            math::Vec3 const offset = initial_res->hit_point;
             math::Vec3 delta = res->hit_point - offset;
             delta *= speed;
             if(snap != 0.0f) {
@@ -46,6 +51,8 @@ namespace anton::gizmo {
                 delta.y = math::round_to_nearest(delta.y, snap);
                 delta.z = math::round_to_nearest(delta.z, snap);
             }
+            // Project the delta into the local space of the object.
+            math::Vec3 const delta_local{inverse_world_transform * math::Vec4{delta, 0.0f}};
             return initial_position + delta;
         } else {
             return initial_position;
