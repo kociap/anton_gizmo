@@ -121,7 +121,7 @@ namespace anton::gizmo {
         }
     }
 
-    math::Mat4 calculate_gizmo_transform(math::Mat4 const& world_transform, f32 const fixed_scale_factor) {
+    math::Mat4 calculate_transform(math::Mat4 const& world_transform, f32 const fixed_scale_factor) {
         math::Vec3 const z_axis = calculate_world_direction(world_transform, {0.0f, 0.0f, -1.0f});
         math::Vec3 y_axis = calculate_world_direction(world_transform, {0.0f, 1.0f, 0.0f});
         // Orthonormalize the y axis
