@@ -29,4 +29,15 @@ namespace anton::gizmo {
         }
         return circle_points;
     }
+
+    [[maybe_unused]] [[nodiscard]] static math::Vec3 calculate_world_origin(math::Mat4 const& world_transform) {
+        math::Vec3 const origin{world_transform * math::Vec4{0.0f, 0.0f, 0.0f, 1.0f}};
+        return origin;
+    }
+
+    [[maybe_unused]] [[nodiscard]] static math::Vec3 calculate_world_direction(math::Mat4 const& world_transform, math::Vec3 const vector) {
+        math::Vec3 const world_direciton{world_transform * math::Vec4{vector, 0.0f}};
+        math::Vec3 const direction = math::normalize(world_direciton);
+        return direction;
+    }
 } // namespace anton::gizmo

@@ -113,50 +113,68 @@ namespace anton::gizmo {
 
     anton::Array<math::Vec3> generate_arrow_3d_geometry(Arrow_3D const& arrow, i32 const vertex_count) {
         switch(arrow.draw_style) {
-            case Arrow_3D_Style::cone: {
+            case Arrow_3D_Style::cone:
                 return generate_cone_geometry(arrow, vertex_count);
-            } break;
 
-            case Arrow_3D_Style::cube: {
+            case Arrow_3D_Style::cube:
                 return generate_cube_geometry(arrow, vertex_count);
-            } break;
         }
     }
 
-    Optional<f32> intersect_arrow_3d(math::Ray const ray, Arrow_3D const& arrow, math::Mat4 const& world_transform) {
+    math::Mat4 calculate_gizmo_transform(math::Mat4 const& world_transform, f32 const fixed_scale_factor) {
+        math::Vec3 const z_axis = calculate_world_direction(world_transform, {0.0f, 0.0f, -1.0f});
+        math::Vec3 y_axis = calculate_world_direction(world_transform, {0.0f, 1.0f, 0.0f});
+        // Orthonormalize the y axis
+        y_axis -= dot(z_axis, y_axis) * z_axis;
+        y_axis = normalize(y_axis);
+        math::Vec3 const x_axis = cross(z_axis, y_axis);
+        math::Vec4 const x_basis{fixed_scale_factor * x_axis, 0.0f};
+        math::Vec4 const y_basis{fixed_scale_factor * y_axis, 0.0f};
+        math::Vec4 const z_basis{fixed_scale_factor * z_axis, 0.0f};
+        math::Vec4 const origin{calculate_world_origin(world_transform), 1.0f};
+        math::Mat4 const transform{x_basis, y_basis, z_basis, origin};
+        return transform;
+    }
+
+    Optional<f32> intersect_arrow_3d(math::Ray const ray, Arrow_3D const& arrow, math::Mat4 const& gizmo_transform) {
         Optional<f32> result = null_optional;
-        math::Vec3 const vertex1{world_transform * math::Vec4{0.0f, 0.0f, 0.0f, 1.0f}};
-        math::Vec3 const vertex2{world_transform * math::Vec4{0.0f, 0.0f, -arrow.shaft_length, 1.0f}};
-        f32 const scale = math::length(vertex2 - vertex1) / arrow.shaft_length;
-        f32 const radius = 0.5f * arrow.shaft_diameter;
-        Optional<Raycast_Hit> const shaft_hit = intersect_ray_cylinder(ray, vertex1, vertex2, scale * radius);
-        if(shaft_hit.holds_value() && (!result || shaft_hit->distance < *result)) {
+        // Uniformly scaled - all axes have the same scale applied
+        f32 const scale = math::length(gizmo_transform[0]);
+        math::Vec3 const origin{gizmo_transform * math::Vec4{0.0f, 0.0f, 0.0f, 1.0f}};
+        math::Vec3 const direction{gizmo_transform * math::Vec4{0.0f, 0.0f, -1.0f, 0.0f}};
+        f32 const shaft_radius = 0.5f * scale * arrow.shaft_diameter;
+        f32 const shaft_length = scale * arrow.shaft_length;
+        Optional<Raycast_Hit> const shaft_hit = intersect_ray_cylinder(ray, origin, origin + direction * shaft_length, shaft_radius);
+        if(shaft_hit) {
             result = shaft_hit->distance;
         }
 
         switch(arrow.draw_style) {
             case Arrow_3D_Style::cone: {
-                math::Vec3 const vertex3{world_transform * math::Vec4(0.0f, 0.0f, -arrow.shaft_length - arrow.cap_length, 1.0f)};
-                math::Vec3 const direction = math::normalize(math::Vec3(world_transform * math::Vec4(0.0f, 0.0f, 1.0f, 0.0f)));
+                math::Vec3 const cone_origin = scale * (arrow.shaft_length + arrow.cap_length) * direction;
+                math::Vec3 const cone_direction = -direction;
                 f32 const cone_height = arrow.cap_length;
                 f32 const cone_radius = 0.5f * arrow.cap_size;
                 // cos(a) = adjacent / hypotenuse
                 f32 const angle_cos = cone_height * math::inv_sqrt(cone_height * cone_height + cone_radius * cone_radius);
-                Optional<Raycast_Hit> const cone_hit = intersect_ray_cone(ray, vertex3, direction, angle_cos, scale * cone_height);
-                if(cone_hit.holds_value() && (!result || cone_hit->distance < *result)) {
+                Optional<Raycast_Hit> const cone_hit = intersect_ray_cone(ray, cone_origin, cone_direction, angle_cos, scale * cone_height);
+                if(cone_hit && (!result || cone_hit->distance < *result)) {
                     result = cone_hit->distance;
                 }
             } break;
 
             case Arrow_3D_Style::cube: {
+                math::Vec3 const x_axis{gizmo_transform * math::Vec4{1.0f, 0.0f, 0.0f, 0.0f}};
+                math::Vec3 const y_axis{gizmo_transform * math::Vec4{0.0f, 1.0f, 0.0f, 0.0f}};
+                math::Vec3 const z_axis{direction};
                 math::OBB cube_bounding_vol;
-                cube_bounding_vol.local_x = math::normalize(math::Vec3(world_transform * math::Vec4(1.0f, 0.0f, 0.0f, 0.0f)));
-                cube_bounding_vol.local_y = math::normalize(math::Vec3(world_transform * math::Vec4(0.0f, 1.0f, 0.0f, 0.0f)));
-                cube_bounding_vol.local_z = math::normalize(math::Vec3(world_transform * math::Vec4(0.0f, 0.0f, -1.0f, 0.0f)));
+                cube_bounding_vol.local_x = x_axis;
+                cube_bounding_vol.local_y = y_axis;
+                cube_bounding_vol.local_z = z_axis;
                 cube_bounding_vol.halfwidths = math::Vec3{0.5f * scale * arrow.cap_size};
-                cube_bounding_vol.center = math::Vec3(world_transform * math::Vec4{0.0f, 0.0f, (-arrow.shaft_length + 0.5f * arrow.cap_size), 1.0f});
+                cube_bounding_vol.center = origin + scale * (arrow.shaft_length - 0.5f * arrow.cap_size) * direction;
                 Optional<Raycast_Hit> const cube_hit = intersect_ray_obb(ray, cube_bounding_vol);
-                if(cube_hit.holds_value() && (!result || cube_hit->distance < *result)) {
+                if(cube_hit && (!result || cube_hit->distance < *result)) {
                     result = cube_hit->distance;
                 }
             } break;
