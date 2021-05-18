@@ -121,18 +121,11 @@ namespace anton::gizmo {
         }
     }
 
-    math::Mat4 calculate_transform(math::Mat4 const& world_transform, f32 const fixed_scale_factor) {
-        math::Vec3 const z_axis = calculate_world_direction(world_transform, {0.0f, 0.0f, -1.0f});
-        math::Vec3 y_axis = calculate_world_direction(world_transform, {0.0f, 1.0f, 0.0f});
-        // Orthonormalize the y axis
-        y_axis -= dot(z_axis, y_axis) * z_axis;
-        y_axis = normalize(y_axis);
-        math::Vec3 const x_axis = cross(z_axis, y_axis);
-        math::Vec4 const x_basis{fixed_scale_factor * x_axis, 0.0f};
-        math::Vec4 const y_basis{fixed_scale_factor * y_axis, 0.0f};
-        math::Vec4 const z_basis{fixed_scale_factor * z_axis, 0.0f};
-        math::Vec4 const origin{calculate_world_origin(world_transform), 1.0f};
-        math::Mat4 const transform{x_basis, y_basis, z_basis, origin};
+    math::Mat4 calculate_transform(math::Mat4 const& world_transform, math::Vec3 const axis) {
+        math::Vec3 world_axis{world_transform * math::Vec4{axis, 0.0f}};
+        world_axis = normalize(world_axis);
+        math::Quat const orientation = orient_towards(axis, world_axis);
+        math::Mat4 transform = rotate(orientation);
         return transform;
     }
 
