@@ -141,7 +141,8 @@ namespace anton::gizmo {
         // Uniformly scaled - all axes have the same scale applied
         f32 const scale = math::length(gizmo_transform[0]);
         math::Vec3 const origin{gizmo_transform * math::Vec4{0.0f, 0.0f, 0.0f, 1.0f}};
-        math::Vec3 const direction{gizmo_transform * math::Vec4{0.0f, 0.0f, -1.0f, 0.0f}};
+        math::Vec3 const direction_scaled{gizmo_transform * math::Vec4{0.0f, 0.0f, -1.0f, 0.0f}};
+        math::Vec3 const direction = normalize(direction_scaled);
         f32 const shaft_radius = 0.5f * scale * arrow.shaft_diameter;
         f32 const shaft_length = scale * arrow.shaft_length;
         Optional<Raycast_Hit> const shaft_hit = intersect_ray_cylinder(ray, origin, origin + direction * shaft_length, shaft_radius);
@@ -151,7 +152,7 @@ namespace anton::gizmo {
 
         switch(arrow.draw_style) {
             case Arrow_3D_Style::cone: {
-                math::Vec3 const cone_origin = scale * (arrow.shaft_length + arrow.cap_length) * direction;
+                math::Vec3 const cone_origin = origin + scale * (arrow.shaft_length + arrow.cap_length) * direction;
                 math::Vec3 const cone_direction = -direction;
                 f32 const cone_height = arrow.cap_length;
                 f32 const cone_radius = 0.5f * arrow.cap_size;
