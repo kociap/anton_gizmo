@@ -4,8 +4,8 @@
 #include <utils.hpp>
 
 namespace anton::gizmo {
-    math::Vec3 translate_along_line(math::Mat4 const inverse_world_transform, math::Ray const ray, math::Vec3 const axis, math::Vec3 const origin,
-                                    math::Ray const initial_ray, math::Vec3 const initial_position, f32 const speed, f32 const snap) {
+    math::Vec3 translate_along_line(math::Mat4 const inverse_parent_transform, math::Ray const ray, math::Vec3 const axis, math::Vec3 const origin,
+                                    math::Ray const initial_ray, math::Vec3 const initial_position, f32 const snap) {
         math::Vec3 const point_on_axis = origin + axis * math::dot(ray.origin - origin, axis);
         math::Vec3 const plane_normal = math::normalize(ray.origin - point_on_axis);
         f32 const plane_distance = math::dot(origin, plane_normal);
@@ -18,15 +18,14 @@ namespace anton::gizmo {
         math::Vec3 const offset = initial_res->hit_point;
         auto const res = intersect_ray_plane(ray, plane_normal, plane_distance);
         if(res) {
-            f32 delta = math::dot(res->hit_point - offset, axis);
-            delta *= speed;
+            math::Vec3 const delta = res->hit_point - offset;
+            f32 delta_length = math::dot(delta, axis);
             if(snap != 0.0f) {
-                delta = math::round_to_nearest(delta, snap);
+                delta_length = math::round_to_nearest(delta_length, snap);
             }
-            // Project the axis into the local space of the object.
-            // Scaling the axis in the local space by the delta should be sufficient.
-            math::Vec3 const axis_local{inverse_world_transform * math::Vec4{axis, 0.0f}};
-            return initial_position + delta * axis_local;
+            math::Vec3 const delta_snap = delta_length * axis;
+            math::Vec3 const local_delta_snap{inverse_parent_transform * math::Vec4{delta_snap, 0.0f}};
+            return initial_position + local_delta_snap;
         } else {
             return initial_position;
         }
