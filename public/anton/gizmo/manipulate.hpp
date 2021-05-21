@@ -13,6 +13,7 @@ namespace anton::gizmo {
     //
     // Parameters:
     // inverse_parent_transform - transform from the world space to the parent space of the object.
+    //                            For manipulation of unparented objects use the identity matrix.
     //                      ray - the current ray in the world space constructed by unprojecting the cursor.
     //                     axis - the axis in the world space along which change from initial_ray will affect the scale. Must be normalized.
     //                   origin - the origin of the manipulation in the world space used to determine the position of the line.
@@ -32,20 +33,23 @@ namespace anton::gizmo {
     // and ray in the plane defined by plane_normal and origin.
     //
     // Parameters:
-    // inverse_world_transform - transform from the world space to the local space of the object.
-    // ray                     - the current ray in the world space constructed by unprojecting the cursor.
-    // plane_normal            - normal defining the plane in the world space along which change from initial_ray will affect the scale. Must be nornalized.
-    // origin                  - the origin of the manipulation in the world space used to determine the position of the line.
-    // initial_ray             - the ray in the world space at the start of the manipulation in the world space.
-    // initial_position        - the position at the start of the manipulation in the local space of the object.
-    // speed                   - a factor to multiply the calculated change by.
-    // snap                    - grid snapping (disabled if snap == 0). Change in position will be rounded to the nearest multiple of snap.
+    // inverse_parent_transform - transform from the world space to the parent space of the object.
+    //                            For manipulation of unparented objects use the identity matrix.
+    //                      ray - the current ray in the world space constructed by unprojecting the cursor.
+    //               first_axis - first axis defining the plane in the world space along which change from initial_ray will affect the scale.
+    //                            Must be nornalized.
+    //              second_axis - second axis defining the plane in the world space along which change from initial_ray will affect the scale.
+    //                            Must be nornalized.
+    //                   origin - the origin of the manipulation in the world space used to determine the position of the line.
+    //              initial_ray - the ray in the world space at the start of the manipulation in the world space.
+    //         initial_position - the position at the start of the manipulation in the local space of the object.
+    //                     snap - grid snapping (disabled if snap == 0). Change in position will be rounded to the nearest multiple of snap.
     //
     // Returns:
-    // The translated position.
+    // The translated position in the parent space.
     //
-    [[nodiscard]] math::Vec3 translate_along_plane(math::Mat4 inverse_world_transform, math::Ray ray, math::Vec3 plane_normal, math::Vec3 origin,
-                                                   math::Ray initial_ray, math::Vec3 initial_position, f32 speed, f32 snap = 0.0f);
+    [[nodiscard]] math::Vec3 translate_along_plane(math::Mat4 inverse_parent_transform, math::Ray ray, math::Vec3 first_axis, math::Vec3 second_axis,
+                                                   math::Vec3 origin, math::Ray initial_ray, math::Vec3 initial_position, f32 snap = 0.0f);
 
     // scale_along_line
     // Scale in the direction of axis. The scale change is calculated based on

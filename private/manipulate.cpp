@@ -15,24 +15,24 @@ namespace anton::gizmo {
             return initial_position;
         }
 
-        math::Vec3 const offset = initial_res->hit_point;
         auto const res = intersect_ray_plane(ray, plane_normal, plane_distance);
         if(res) {
-            math::Vec3 const delta = res->hit_point - offset;
+            math::Vec3 const delta = res->hit_point - initial_res->hit_point;
             f32 delta_length = math::dot(delta, axis);
             if(snap != 0.0f) {
                 delta_length = math::round_to_nearest(delta_length, snap);
             }
             math::Vec3 const delta_snap = delta_length * axis;
-            math::Vec3 const local_delta_snap{inverse_parent_transform * math::Vec4{delta_snap, 0.0f}};
-            return initial_position + local_delta_snap;
+            math::Vec3 const local_delta{inverse_parent_transform * math::Vec4{delta_snap, 0.0f}};
+            return initial_position + local_delta;
         } else {
             return initial_position;
         }
     }
 
-    math::Vec3 translate_along_plane(math::Mat4 const inverse_world_transform, math::Ray const ray, math::Vec3 const plane_normal, math::Vec3 const origin,
-                                     math::Ray const initial_ray, math::Vec3 const initial_position, f32 const speed, f32 const snap) {
+    math::Vec3 translate_along_plane(math::Mat4 const inverse_parent_transform, math::Ray const ray, math::Vec3 const first_axis, math::Vec3 const second_axis,
+                                     math::Vec3 const origin, math::Ray const initial_ray, math::Vec3 const initial_position, f32 const snap) {
+        math::Vec3 const plane_normal = math::cross(first_axis, second_axis);
         f32 const plane_distance = math::dot(origin, plane_normal);
         // Calculate cursor offset that we'll use to prevent the center of the object from snapping to the cursor
         auto const initial_res = intersect_ray_plane(initial_ray, plane_normal, plane_distance);
@@ -42,17 +42,16 @@ namespace anton::gizmo {
 
         auto res = intersect_ray_plane(ray, plane_normal, plane_distance);
         if(res) {
-            math::Vec3 const offset = initial_res->hit_point;
-            math::Vec3 delta = res->hit_point - offset;
-            delta *= speed;
+            math::Vec3 delta = res->hit_point - initial_res->hit_point;
             if(snap != 0.0f) {
-                delta.x = math::round_to_nearest(delta.x, snap);
-                delta.y = math::round_to_nearest(delta.y, snap);
-                delta.z = math::round_to_nearest(delta.z, snap);
+                f32 delta_first = math::dot(delta, first_axis);
+                delta_first = math::round_to_nearest(delta_first, snap);
+                f32 delta_second = math::dot(delta, second_axis);
+                delta_second = math::round_to_nearest(delta_second, snap);
+                delta = delta_first * first_axis + delta_second * second_axis;
             }
-            // Project the delta into the local space of the object.
-            math::Vec3 const delta_local{inverse_world_transform * math::Vec4{delta, 0.0f}};
-            return initial_position + delta;
+            math::Vec3 const local_delta{inverse_parent_transform * math::Vec4{delta, 0.0f}};
+            return initial_position + local_delta;
         } else {
             return initial_position;
         }
