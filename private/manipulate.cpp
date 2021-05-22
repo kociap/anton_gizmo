@@ -120,7 +120,7 @@ namespace anton::gizmo {
     }
 
     math::Vec3 scale_uniform_along_line(math::Ray const ray, math::Vec3 const axis, math::Vec3 const origin, math::Ray const initial_ray,
-                                        math::Vec3 const initial_scale, f32 const speed, f32 const snap) {
+                                        math::Vec3 const initial_scale, f32 const snap) {
         math::Vec3 const point_on_axis = origin + axis * math::dot(ray.origin - origin, axis);
         math::Vec3 const plane_normal = math::normalize(ray.origin - point_on_axis);
         f32 const plane_distance = math::dot(origin, plane_normal);
@@ -129,13 +129,10 @@ namespace anton::gizmo {
             return initial_scale;
         }
 
-        math::Vec3 const offset = initial_res->hit_point;
         if(auto res = intersect_ray_plane(ray, plane_normal, plane_distance)) {
-            math::Vec3 const hit = res->hit_point;
-            f32 const offset_line_length = math::dot(offset - origin, axis);
-            f32 const hit_line_length = math::dot(hit - origin, axis);
+            f32 const offset_line_length = math::dot(initial_res->hit_point - origin, axis);
+            f32 const hit_line_length = math::dot(res->hit_point - origin, axis);
             f32 factor = hit_line_length / offset_line_length;
-            factor *= speed;
             if(snap != 0.0f) {
                 factor = math::round_to_nearest(factor, snap);
             }
@@ -145,24 +142,22 @@ namespace anton::gizmo {
         }
     }
 
-    math::Vec3 scale_uniform_along_plane(math::Ray const ray, math::Vec3 const plane_normal, math::Vec3 const origin, math::Ray const initial_ray,
-                                         math::Vec3 const initial_scale, f32 const speed, f32 const snap) {
+    math::Vec3 scale_uniform_along_plane(math::Ray const ray, math::Vec3 const first_axis, math::Vec3 const second_axis, math::Vec3 const origin,
+                                         math::Ray const initial_ray, math::Vec3 const initial_scale, f32 const snap) {
+        math::Vec3 const plane_normal = math::normalize(math::cross(first_axis, second_axis));
         f32 const plane_distance = math::dot(origin, plane_normal);
         auto const initial_res = intersect_ray_plane(initial_ray, plane_normal, plane_distance);
         if(!initial_res) {
             return initial_scale;
         }
 
-        math::Vec3 const offset = initial_res->hit_point;
         if(auto res = intersect_ray_plane(ray, plane_normal, plane_distance)) {
-            math::Vec3 const hit = res->hit_point;
-            math::Vec3 const origin_offset = offset - origin;
-            math::Vec3 const origin_hit = hit - origin;
+            math::Vec3 const origin_offset = initial_res->hit_point - origin;
+            math::Vec3 const origin_hit = res->hit_point - origin;
             f32 const origin_offset_length = math::length(origin_offset);
             f32 const origin_hit_length = math::length(origin_hit);
             f32 const sign = math::dot(origin_offset, origin_hit) >= 0 ? 1 : -1;
             f32 factor = sign * origin_hit_length / origin_offset_length;
-            factor *= speed;
             if(snap != 0.0f) {
                 factor = math::round_to_nearest(factor, snap);
             }
