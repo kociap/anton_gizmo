@@ -58,8 +58,8 @@ namespace anton::gizmo {
         }
     }
 
-    math::Vec3 scale_along_line(math::Mat4 const inverse_parent_transform, math::Ray const ray, math::Vec3 const axis_world, math::Vec3 const axis_local,
-                                math::Vec3 const origin, math::Ray const initial_ray, math::Vec3 const initial_scale, f32 const snap) {
+    math::Vec3 scale_along_line(math::Ray const ray, math::Vec3 const axis_world, math::Vec3 const axis_local, math::Vec3 const origin,
+                                math::Ray const initial_ray, math::Vec3 const initial_scale, f32 const snap) {
         math::Vec3 const point_on_axis = origin + axis_world * math::dot(ray.origin - origin, axis_world);
         math::Vec3 const plane_normal = math::normalize(ray.origin - point_on_axis);
         f32 const plane_distance = math::dot(origin, plane_normal);
@@ -86,9 +86,9 @@ namespace anton::gizmo {
         }
     }
 
-    math::Vec3 scale_along_plane(math::Mat4 const inverse_parent_transform, math::Ray const ray, math::Vec3 const first_axis_world,
-                                 math::Vec3 const first_axis_local, math::Vec3 const second_axis_world, math::Vec3 const second_axis_local,
-                                 math::Vec3 const origin, math::Ray const initial_ray, math::Vec3 const initial_scale, f32 const snap) {
+    math::Vec3 scale_along_plane(math::Ray const ray, math::Vec3 const first_axis_world, math::Vec3 const first_axis_local, math::Vec3 const second_axis_world,
+                                 math::Vec3 const second_axis_local, math::Vec3 const origin, math::Ray const initial_ray, math::Vec3 const initial_scale,
+                                 f32 const snap) {
         // The axes are NOT necessarily perpendicular
         math::Vec3 const plane_normal = math::normalize(math::cross(first_axis_world, second_axis_world));
         f32 const plane_distance = math::dot(origin, plane_normal);
@@ -169,7 +169,7 @@ namespace anton::gizmo {
 
     math::Quat orient_turn(math::Ray const ray, math::Vec3 const axis, math::Vec3 const origin, math::Ray const initial_ray,
                            math::Quat const initial_orientation, f32 const snap) {
-        math::Vec3 const plane_normal = math::normalize(axis);
+        math::Vec3 const plane_normal = axis;
         f32 const plane_distance = math::dot(origin, plane_normal);
         // Calculate cursor offset
         auto const offset_res = intersect_ray_plane(initial_ray, plane_normal, plane_distance);
@@ -195,8 +195,9 @@ namespace anton::gizmo {
         }
     }
 
-    math::Quat orient_trackball(math::Ray const ray, math::Vec3 const plane_normal, math::Vec3 const origin, math::Ray const initial_ray,
-                                math::Quat const initial_orientation) {
+    math::Quat orient_trackball(math::Ray const ray, math::Vec3 const first_axis, math::Vec3 const second_axis, math::Vec3 const origin,
+                                math::Ray const initial_ray, math::Quat const initial_orientation) {
+        math::Vec3 const plane_normal = math::normalize(math::cross(first_axis, second_axis));
         f32 const plane_distance = math::dot(origin, plane_normal);
         // Calculate cursor offset
         auto const offset_res = intersect_ray_plane(initial_ray, plane_normal, plane_distance);
