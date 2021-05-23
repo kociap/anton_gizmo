@@ -196,7 +196,7 @@ namespace anton::gizmo {
     }
 
     math::Quat orient_trackball(math::Ray const ray, math::Vec3 const first_axis, math::Vec3 const second_axis, math::Vec3 const origin,
-                                math::Ray const initial_ray, math::Quat const initial_orientation) {
+                                math::Ray const initial_ray, math::Quat const initial_orientation, f32 const snap) {
         math::Vec3 const plane_normal = math::normalize(math::cross(first_axis, second_axis));
         f32 const plane_distance = math::dot(origin, plane_normal);
         // Calculate cursor offset
