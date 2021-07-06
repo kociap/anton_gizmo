@@ -43,14 +43,18 @@ namespace anton::gizmo {
 
         auto res = intersect_ray_plane(ray, plane_normal, plane_distance);
         if(res) {
-            math::Vec3 delta = res->hit_point - initial_res->hit_point;
+            math::Vec3 const point = res->hit_point - initial_res->hit_point;
+            math::Mat4 const transform{math::Vec4{first_axis, 0.0f}, math::Vec4{second_axis, 0.0f}, math::Vec4{plane_normal, 0.0f},
+                                       math::Vec4{0.0f, 0.0f, 0.0f, 1.0f}};
+            math::Mat4 const inv_transform = math::inverse(transform);
+            math::Vec3 const transformed_point{inv_transform * math::Vec4{point, 1.0f}};
+            f32 first_factor = transformed_point.x;
+            f32 second_factor = transformed_point.y;
             if(snap != 0.0f) {
-                f32 delta_first = math::dot(delta, first_axis);
-                delta_first = math::round_to_nearest(delta_first, snap);
-                f32 delta_second = math::dot(delta, second_axis);
-                delta_second = math::round_to_nearest(delta_second, snap);
-                delta = delta_first * first_axis + delta_second * second_axis;
+                first_factor = math::round_to_nearest(first_factor, snap);
+                second_factor = math::round_to_nearest(second_factor, snap);
             }
+            math::Vec3 const delta = first_factor * first_axis + second_factor * second_axis;
             math::Vec3 const local_delta{inverse_parent_transform * math::Vec4{delta, 0.0f}};
             return initial_position + local_delta;
         } else {
